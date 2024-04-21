@@ -17,7 +17,7 @@ public class BTreePage<T extends Comparable<T>> {
     private int order;
 
     private BTreePage<T> father;
-    private int fatherRefNum;
+    //private int fatherRefNum;
 
     /**
      * Crea una pagina raiz
@@ -41,7 +41,7 @@ public class BTreePage<T extends Comparable<T>> {
         totalElements = 0;
         this.order = order;
         this.father = father;
-        this.fatherRefNum = fatherRefNum;
+        //this.fatherRefNum = fatherRefNum;
     }
 
     /**
@@ -50,7 +50,7 @@ public class BTreePage<T extends Comparable<T>> {
      * @param content
      */
     public void insert(T content) {
-        if (punteros.getFirst() == null) {
+        if (punteros.isEmpty()) {
             insertInLevel(content);
             this.growUp();
         } else {
@@ -64,7 +64,7 @@ public class BTreePage<T extends Comparable<T>> {
                     break;
                 }
             }
-            if (!inserted) {
+            if (!inserted) {//below here
                 punteros.get(index).insert(content);
             }
         }
@@ -77,7 +77,7 @@ public class BTreePage<T extends Comparable<T>> {
         boolean inserted = false;
         int index;
         for (index = 0; index < nodes.size(); index++) {
-            if (content.compareTo(nodes.get(index)) >= 0) {
+            if (content.compareTo(nodes.get(index)) <= 0) {
                 nodes.add(index, content);
                 inserted = true;
                 break;
@@ -103,6 +103,15 @@ public class BTreePage<T extends Comparable<T>> {
         nodes.addAll(orderedNodes);
         totalElements = nodes.size();
     }
+    
+    private void internalAdjust(LinkedList<BTreePage<T>> punteros){
+        
+        if(punteros.size() == totalElements +1){
+            this.punteros.addAll(punteros);
+        } else {
+            throw new AssertionError("No se pueden agregar demasiados punteros");
+        }
+    }
 
     /**
      * Hace crecer la pagina
@@ -111,22 +120,30 @@ public class BTreePage<T extends Comparable<T>> {
         if (isFull()) {
             //crea nodos mas profundos
             int middle = (int) order / 2;
+
             BTreePage<T> left = new BTreePage<>(order, this, 0);
-            left.internalInsert((LinkedList<T>) nodes.subList(0, middle));
+            left.internalInsert(new LinkedList<>(nodes.subList(0, middle)));
+
             BTreePage<T> right = new BTreePage<>(order, this, 1);
-            right.internalInsert((LinkedList<T>) nodes.subList(middle + 1, nodes.size()));
+            right.internalInsert(new LinkedList<>(nodes.subList(middle + 1, nodes.size())));
+            
+            //mantiene las referencias de punteros mas profundos
+            if(!this.punteros.isEmpty()){
+                left.internalAdjust(new LinkedList<>(punteros.subList(0, middle+1)));
+                right.internalAdjust(new LinkedList<>(punteros.subList(middle+1, punteros.size())));
+            }
 
             //mantiene la pagina actual
             T middleNode = nodes.get(middle);
             this.reset();
-            nodes.add(middleNode);
+            this.nodes.add(middleNode);
+            this.totalElements++;
 
-            //crea referencias
+            //crea referencias de hacia los hijos
+            punteros.addFirst(left); //pos 0
+            punteros.addLast(right); //pos 1
             if (father != null) {
                 father.concatReference(this);
-            } else {
-                punteros.addFirst(left); //pos 0
-                punteros.addLast(right); //pos 1
             }
         }
     }
@@ -137,20 +154,23 @@ public class BTreePage<T extends Comparable<T>> {
     private void concatReference(BTreePage<T> subPage) {
         this.nodes.add(subPage.fatherRefNum, subPage.nodes.get(0)); //agrega el medio en la posicion adecuada
         this.totalElements++;
-        //arreglar referncias de los hijos de subpage
+        //arreglar referencias de los hijos de subpage
         subPage.punteros.getFirst().fatherRefNum = subPage.fatherRefNum;
         subPage.punteros.getLast().fatherRefNum = subPage.fatherRefNum + 1;
         subPage.punteros.getLast().father = this;
         subPage.punteros.getFirst().father = this;
-        //agregar al padre (this)
+        //arregla los nuevos punteros del padre.
+        this.punteros.remove(subPage.fatherRefNum);
         this.punteros.add(subPage.fatherRefNum, subPage.punteros.getFirst());
         this.punteros.add(subPage.fatherRefNum + 1, subPage.punteros.getLast());
+        this.growUp();
     }
 
     /**
      * Elimina todos los datos de la pagina
      */
     private void reset() {
+        punteros.clear();
         nodes.clear();
         totalElements = 0;
     }
@@ -190,13 +210,17 @@ public class BTreePage<T extends Comparable<T>> {
             }
         }
     }
-    
-    public LinkedList<T> getNodes(){
+
+    public LinkedList<T> getNodes() {
         return this.nodes;
     }
-    
-    public LinkedList<BTreePage<T>> getPunteros(){
+
+    public LinkedList<BTreePage<T>> getPunteros() {
         return this.punteros;
+    }
+
+    public boolean hasFather() {
+        return this.father != null;
     }
 
 }

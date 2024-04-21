@@ -32,11 +32,11 @@ public class TravelMapGT {
         tree.insert(200);
         tree.insert(210);
         tree.insert(305);
-        tree.insert(01);
+        tree.insert(1);
         tree.insert(230);
         tree.insert(400);
         tree.insert(401);
-        /*tree.insert(500);
+        tree.insert(500);
         tree.insert(501);
         tree.insert(502);
         tree.insert(510);
@@ -45,7 +45,7 @@ public class TravelMapGT {
         tree.insert(530);
         tree.insert(540);
         tree.insert(550);
-        tree.insert(560);*/
+        tree.insert(560);
 
         System.out.println("Se ha terminado de insertar");
         BTreeGrapher bTreeGrapher = new BTreeGrapher();

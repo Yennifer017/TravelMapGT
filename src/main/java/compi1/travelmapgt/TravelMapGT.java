@@ -1,9 +1,8 @@
 
 package compi1.travelmapgt;
 
-import compi1.travelmapgt.graphviz.BTreeGrapher;
-import compi1.travelmapgt.structures.BTree;
-import java.io.IOException;
+import compi1.travelmapgt.graphviz.GraphGrapher;
+import compi1.travelmapgt.structures.Graph;
 
 /**
  *
@@ -12,50 +11,42 @@ import java.io.IOException;
 public class TravelMapGT {
 
     public static void main(String[] args) {
-        BTree<Integer> tree = new BTree<>(5);
-        tree.insert(10);
-        tree.insert(30);
-        tree.insert(5);
-        tree.insert(6);
-        tree.insert(8);
-        tree.insert(20);
-        tree.insert(2);
-        tree.insert(40);
-        tree.insert(50);
-        tree.insert(11);
-        tree.insert(23);
-        tree.insert(41);
-        tree.insert(100);
-        tree.insert(102);
-        tree.insert(405);
-        tree.insert(300);
-        tree.insert(200);
-        tree.insert(210);
-        tree.insert(305);
-        tree.insert(1);
-        tree.insert(230);
-        tree.insert(400);
-        tree.insert(401);
-        tree.insert(500);
-        tree.insert(501);
-        tree.insert(502);
-        tree.insert(510);
-        tree.insert(505);
-        tree.insert(520);
-        tree.insert(530);
-        tree.insert(540);
-        tree.insert(550);
-        tree.insert(560);
-
-        System.out.println("Se ha terminado de insertar");
-        BTreeGrapher bTreeGrapher = new BTreeGrapher();
+        Graph<String, Integer> grafo = new Graph<>();
+        GraphGrapher<String, Integer> grapher = new GraphGrapher<>();
         try {
-            bTreeGrapher.graph("../", "graphviz", tree);
-            System.out.println("Se ha terminado de generar el grafico");
-        } catch (IOException ex) {
-            System.out.println("No se pudo generar el archivo");
-            System.out.println(ex);
-            ex.printStackTrace();
+            grafo.addNode("Nodo1");
+            grafo.addNode("Nodo2");
+            grafo.addNode("Nodo3");
+            grafo.addNode("Nodo4");
+            grafo.addNode("Nodo5");
+            grafo.addNode("Nodo6");
+            grafo.addNode("Nodo7");
+            grafo.addNode("Nodo8");
+            grafo.addNode("Nodo9");
+            grafo.addNode("Nodo10");
+            System.out.println("Se terminaron de agregar los nodos");
+            grafo.addArista("Nodo10", "Nodo9", 1);
+            grafo.addArista("Nodo8", "Nodo9", 2);
+            grafo.addArista("Nodo10", "Nodo8", 2);
+            grafo.addArista("Nodo8", "Nodo7", 2);
+            grafo.addArista("Nodo7", "Nodo6", 1);
+            grafo.addArista("Nodo6", "Nodo7", 2);
+            grafo.addArista("Nodo7", "Nodo5", 1);
+            grafo.addArista("Nodo5", "Nodo6", 2);
+            grafo.addArista("Nodo10", "Nodo6", 2);
+            grafo.addArista("Nodo6", "Nodo4", 2);
+            grafo.addArista("Nodo4", "Nodo3", 1);
+            grafo.addArista("Nodo2", "Nodo3", 3);
+            grafo.addArista("Nodo3", "Nodo2", 1);
+            grafo.addArista("Nodo1", "Nodo2", 2);
+            grafo.addArista("Nodo1", "Nodo3", 2);
+            grafo.addArista("Nodo10", "Nodo3", 2);
+            System.out.println("se terminaron de ingresar las aristas");
+            grapher.graph("../", "grafos", grafo);
+            System.out.println("Se exporto correctamente");
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
         }
     }
 }

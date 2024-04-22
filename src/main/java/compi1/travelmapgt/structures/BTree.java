@@ -10,13 +10,16 @@ import compi1.travelmapgt.exceptions.NoDataFoundException;
 public class BTree<T extends Comparable<T>> {
 
     private BTreePage<T> raiz;
+    private int size;
 
     public BTree(int orden) {
         raiz = new BTreePage<>(orden);
+        size = 0;
     }
 
     public void insert(T content) {
         raiz.insert(content);
+        size++;
     }
 
     public T find(T comparable) throws NoDataFoundException {
@@ -35,7 +38,7 @@ public class BTree<T extends Comparable<T>> {
         try {
             raiz.get(comparable);
             return true;
-        } catch (NoDataFoundException e) {
+        } catch (NoDataFoundException | IndexOutOfBoundsException e) {
             return false;
         }
     }
@@ -54,6 +57,10 @@ public class BTree<T extends Comparable<T>> {
             }
             return counter;
         }
+    }
+    
+    public int getSize(){
+        return size;
     }
 
 }

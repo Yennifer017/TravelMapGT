@@ -217,7 +217,7 @@ public class BTreePage<T extends Comparable<T>> {
                 T node = nodes.get(i);
                 if (node.compareTo(comparable) == 0) {
                     return node;
-                } else if (node.compareTo(comparable) < 0) {
+                } else if (node.compareTo(comparable) > 0) {
                     if (punteros.get(i) != null) {
                         return punteros.get(i).get(comparable);
                     } else {

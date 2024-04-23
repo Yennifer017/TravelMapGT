@@ -1,19 +1,47 @@
-
 package compi1.travelmapgt.files;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import javax.swing.JFileChooser;
 
 /**
  *
  * @author yennifer
  */
 public class FilesUtil {
-    
+
+    /**
+     * obtiene el texto contenido en un archivo y lo devuelve
+     *
+     * @param path
+     * @throws java.io.FileNotFoundException
+     */
+    public String readTextFile(String path) throws FileNotFoundException, IOException {
+        String texto = "";
+        File archivo = new File(path); //creando el archivo
+        FileReader lector = new FileReader(archivo); //lector del archivo
+        BufferedReader buffer = new BufferedReader(lector); //para leer mas rapido el archivo
+        String linea;
+        while ((linea = buffer.readLine()) != null) {
+            texto += linea + "\n";
+        }
+        buffer.close();
+        lector.close();
+        return texto;
+    }
+
+    public String getPath() {
+        JFileChooser buscador = new JFileChooser(); //creando el buscador de archivos
+        buscador.showOpenDialog(null); //abrir el buscador
+        return buscador.getSelectedFile().getAbsolutePath();
+    }
+
     /**
      * crea una carpeta
      *
@@ -28,9 +56,9 @@ public class FilesUtil {
         String path = rootPath + getSeparator() + name;
         File directory = new File(path);
         if (!directory.exists()) {
-            if(directory.mkdir()){
+            if (directory.mkdir()) {
                 return path;
-            }else{
+            } else {
                 throw new IOException();
             }
         } else {
@@ -57,11 +85,11 @@ public class FilesUtil {
      * @param ruta
      * @throws java.io.IOException
      */
-    public void saveFile(String texto, String ruta) throws IOException{
+    public void saveFile(String texto, String ruta) throws IOException {
         File archivo = new File(ruta); //obtiene el archivo de la ruta
-        if(archivo.exists()){
+        if (archivo.exists()) {
             saveFile(texto, archivo);
-        }else{
+        } else {
             throw new FileNotFoundException();
         }
     }
@@ -90,21 +118,27 @@ public class FilesUtil {
         File archivo = new File(path);
         return archivo.delete();
     }
-    
-    public boolean deleteDirectory(String path){
+
+    /**
+     * Elimina una carpeta
+     *
+     * @param path
+     * @return si fue correctamente eliminado
+     */
+    public boolean deleteDirectory(String path) {
         File folder = new File(path);
-        if(folder.exists() && folder.isDirectory()) {
+        if (folder.exists() && folder.isDirectory()) {
             return deleteFolder(folder);
         } else {
             return false;
         }
     }
-    
-    private boolean deleteFolder(File folder){
+
+    private boolean deleteFolder(File folder) {
         File[] files = folder.listFiles();
-        if(files != null) {
-            for(File file : files) {
-                if(file.isDirectory()) {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
                     deleteFolder(file);
                 } else {
                     file.delete();
@@ -116,13 +150,15 @@ public class FilesUtil {
 
     /**
      * Guarda un nuevo archivo como, solo si no existe
+     *
      * @param text
      * @param extension incluyendo el punto
      * @param nameFile
-     * @param path donde se guardara el archivo, sin incluir al final el separador
+     * @param path donde se guardara el archivo, sin incluir al final el
+     * separador
      * @throws java.io.IOException si no se puede guardar bien
      */
-    public void saveAs(String text, String extension, String nameFile, String path) 
+    public void saveAs(String text, String extension, String nameFile, String path)
             throws IOException {
         String finalPath = path + getSeparator() + nameFile + extension;
         File file = new File(finalPath);
@@ -132,5 +168,5 @@ public class FilesUtil {
             throw new FileAlreadyExistsException(file.toString());
         }
     }
-   
+
 }

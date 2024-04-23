@@ -1,8 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package compi1.travelmapgt;
+
+import compi1.travelmapgt.util.Clock;
+import java.awt.FlowLayout;
+import java.time.LocalTime;
+import java.util.Calendar;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -10,11 +17,22 @@ package compi1.travelmapgt;
  */
 public class MainMenu extends javax.swing.JFrame {
 
+    private Clock clock;
+    private Thread threadClock;
+
     /**
      * Creates new form MainMenu
      */
     public MainMenu() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        initClock();
+    }
+
+    private void initClock() {
+        clock = new Clock(hourDisplay);
+        threadClock = new Thread(clock);
+        threadClock.start();
     }
 
     /**
@@ -26,57 +44,330 @@ public class MainMenu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        hourDisplay = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jComboBox3 = new javax.swing.JComboBox<>();
+        jComboBox4 = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        bStart = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        jPanel2 = new javax.swing.JPanel();
+        menu = new javax.swing.JMenuBar();
+        dataMenu = new javax.swing.JMenu();
+        LocationDataOp = new javax.swing.JMenuItem();
+        TraficDataOp = new javax.swing.JMenuItem();
+        exampleDataOp = new javax.swing.JMenuItem();
+        HourMenu = new javax.swing.JMenu();
+        setHourOp = new javax.swing.JMenuItem();
+        resetHourOp = new javax.swing.JMenuItem();
+        pauseClockOp = new javax.swing.JMenuItem();
+        continueClock = new javax.swing.JMenuItem();
+        Information = new javax.swing.JMenu();
+        helpOp = new javax.swing.JMenuItem();
+        creditsOp = new javax.swing.JMenuItem();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(0, 47, 79));
+
+        jLabel1.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel1.setText("Hora:");
+
+        hourDisplay.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        hourDisplay.setForeground(new java.awt.Color(228, 228, 228));
+        hourDisplay.setText("00:00");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel3.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel3.setText("Inicio:");
+
+        jLabel4.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel4.setText("Fin:");
+
+        jLabel5.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel5.setText("Trans.");
+
+        jLabel6.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel6.setText("Filtros:");
+
+        bStart.setText("Iniciar");
+        bStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bStartActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(bStart)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(hourDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jComboBox2, 0, 195, Short.MAX_VALUE)
+                        .addComponent(jComboBox3, 0, 195, Short.MAX_VALUE)
+                        .addComponent(jComboBox4, 0, 195, Short.MAX_VALUE)))
+                .addContainerGap(17, Short.MAX_VALUE))
+            .addComponent(jSeparator1)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(hourDisplay))
+                .addGap(26, 26, 26)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addGap(37, 37, 37)
+                .addComponent(bStart)
+                .addContainerGap(215, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBackground(new java.awt.Color(2, 41, 58));
+        jPanel2.setForeground(new java.awt.Color(0, 63, 72));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 714, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        dataMenu.setText("Datos");
+
+        LocationDataOp.setText("Ingresar datos de ubicacion");
+        LocationDataOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LocationDataOpActionPerformed(evt);
+            }
+        });
+        dataMenu.add(LocationDataOp);
+
+        TraficDataOp.setText("Ingresar datos de trafico");
+        TraficDataOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TraficDataOpActionPerformed(evt);
+            }
+        });
+        dataMenu.add(TraficDataOp);
+
+        exampleDataOp.setText("Datos de ejemplo");
+        exampleDataOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exampleDataOpActionPerformed(evt);
+            }
+        });
+        dataMenu.add(exampleDataOp);
+
+        menu.add(dataMenu);
+
+        HourMenu.setText("Horario");
+
+        setHourOp.setText("Ajustar reloj");
+        setHourOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setHourOpActionPerformed(evt);
+            }
+        });
+        HourMenu.add(setHourOp);
+
+        resetHourOp.setText("Autoajustar reloj");
+        resetHourOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetHourOpActionPerformed(evt);
+            }
+        });
+        HourMenu.add(resetHourOp);
+
+        pauseClockOp.setText("Pausar reloj");
+        pauseClockOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pauseClockOpActionPerformed(evt);
+            }
+        });
+        HourMenu.add(pauseClockOp);
+
+        continueClock.setText("Reiniciar reloj");
+        continueClock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                continueClockActionPerformed(evt);
+            }
+        });
+        HourMenu.add(continueClock);
+
+        menu.add(HourMenu);
+
+        Information.setText("Informacion");
+
+        helpOp.setText("Ayuda");
+        helpOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpOpActionPerformed(evt);
+            }
+        });
+        Information.add(helpOp);
+
+        creditsOp.setText("Creditos");
+        creditsOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                creditsOpActionPerformed(evt);
+            }
+        });
+        Information.add(creditsOp);
+
+        menu.add(Information);
+
+        setJMenuBar(menu);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void LocationDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LocationDataOpActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainMenu().setVisible(true);
-            }
-        });
-    }
+    }//GEN-LAST:event_LocationDataOpActionPerformed
+
+    private void TraficDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TraficDataOpActionPerformed
+
+    }//GEN-LAST:event_TraficDataOpActionPerformed
+
+    private void exampleDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exampleDataOpActionPerformed
+
+    }//GEN-LAST:event_exampleDataOpActionPerformed
+
+    private void setHourOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setHourOpActionPerformed
+        String hour = JOptionPane.showInputDialog(null, "Ingrese la hora (HH:MM):");
+        if(hour.matches("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+            String[] hourData = hour.split(":");
+            LocalTime newTime = LocalTime.of(Integer.parseInt(hourData[0]), Integer.parseInt(hourData[1]));
+            clock.adjust(newTime);
+        } else {
+            JOptionPane.showMessageDialog(null, "Formato de hora incorrecto.");
+        }
+    }//GEN-LAST:event_setHourOpActionPerformed
+
+    private void resetHourOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetHourOpActionPerformed
+        clock.restartHour();
+    }//GEN-LAST:event_resetHourOpActionPerformed
+
+    private void pauseClockOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseClockOpActionPerformed
+        clock.stop();
+    }//GEN-LAST:event_pauseClockOpActionPerformed
+
+    private void helpOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpOpActionPerformed
+        JOptionPane.showMessageDialog(null,
+                "Puedes consultar el manual de usuario en el repositorio de github",
+                "Ayuda", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_helpOpActionPerformed
+
+    private void creditsOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditsOpActionPerformed
+        JOptionPane.showMessageDialog(null, """
+                Proyecto creado con muuuy poco tiempo, no esperes mucho de el :c tenle piedad al programa
+                Si encuentras un bug es culpa del poco tiempo de hacer el proyecto y no dormir bien -iG""",
+                "Ayuda", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_creditsOpActionPerformed
+
+    private void bStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStartActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bStartActionPerformed
+
+    private void continueClockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueClockActionPerformed
+        clock.restart();
+        threadClock.interrupt();
+    }//GEN-LAST:event_continueClockActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu HourMenu;
+    private javax.swing.JMenu Information;
+    private javax.swing.JMenuItem LocationDataOp;
+    private javax.swing.JMenuItem TraficDataOp;
+    private javax.swing.JButton bStart;
+    private javax.swing.JMenuItem continueClock;
+    private javax.swing.JMenuItem creditsOp;
+    private javax.swing.JMenu dataMenu;
+    private javax.swing.JMenuItem exampleDataOp;
+    private javax.swing.JMenuItem helpOp;
+    private javax.swing.JLabel hourDisplay;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JComboBox<String> jComboBox4;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JMenuBar menu;
+    private javax.swing.JMenuItem pauseClockOp;
+    private javax.swing.JMenuItem resetHourOp;
+    private javax.swing.JMenuItem setHourOp;
     // End of variables declaration//GEN-END:variables
 }

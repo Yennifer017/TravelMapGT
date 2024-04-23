@@ -1,8 +1,8 @@
 
 package compi1.travelmapgt.graphviz;
 
-import compi1.travelmapgt.structures.BTree;
-import compi1.travelmapgt.structures.BTreePage;
+import compi1.travelmapgt.structures.btree.BTree;
+import compi1.travelmapgt.structures.btree.BTreePage;
 import compi1.travelmapgt.util.Index;
 import java.io.IOException;
 

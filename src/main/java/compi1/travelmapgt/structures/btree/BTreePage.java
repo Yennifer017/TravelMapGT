@@ -1,4 +1,4 @@
-package compi1.travelmapgt.structures;
+package compi1.travelmapgt.structures.btree;
 
 import compi1.travelmapgt.exceptions.NoDataFoundException;
 import java.util.LinkedList;

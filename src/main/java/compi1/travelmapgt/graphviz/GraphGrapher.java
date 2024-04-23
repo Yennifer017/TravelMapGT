@@ -1,98 +1,84 @@
 package compi1.travelmapgt.graphviz;
 
-import compi1.travelmapgt.structures.BTree;
-import compi1.travelmapgt.structures.BTreePage;
-import compi1.travelmapgt.structures.Graph;
-import compi1.travelmapgt.structures.GraphArista;
-import compi1.travelmapgt.structures.WeightGraph;
+import compi1.travelmapgt.models.LocationInfo;
+import compi1.travelmapgt.models.PathInfo;
+import compi1.travelmapgt.structures.btree.BTree;
+import compi1.travelmapgt.structures.btree.BTreePage;
+import compi1.travelmapgt.structures.graph.Grafo;
+import compi1.travelmapgt.structures.graph.NodeGraph;
 import java.io.IOException;
-import java.util.LinkedList;
 
 /**
  *
  * @author yennifer
- * @param <K>
- * @param <T>
  */
-public class GraphGrapher<K extends Comparable<K>, T extends Comparable<T>> {
-
+public class GraphGrapher{
+    
     private final static String ENTER = "\n";
     private final static String IDENTATION = "    ";
-
+    private final static String COLOR_SELECTED = "\"#4ffffc\"";
+    
     private ImageGenerator generator;
 
     public GraphGrapher() {
         this.generator = new ImageGenerator();
+}
+
+    public void graph(String finalPath, String nameFile, Grafo<LocationInfo, PathInfo> grafo) throws IOException {
+        generator.generateImg(finalPath, nameFile, getCode(grafo));
     }
 
-    public void graph(String finalPath, String nameFile, Graph graph) throws IOException {
-        generator.generateImg(finalPath, nameFile, getCode(graph));
-    }
-
-    private String getCode(Graph graph) {
+    private String getCode(Grafo<LocationInfo, PathInfo> grafo){
         String code = "digraph {" + ENTER;
+        code += IDENTATION + "node [style=filled]" + ENTER;
         code += IDENTATION + "rankdir=LR;" + ENTER;
-        code += graficatePath(graph.getAristas().getRaiz());
+        code += defineNodes(grafo);
+        code += generateConnection(grafo);
         code += "}";
         return code;
     }
-
-    private String graficatePath(BTreePage<GraphArista<K, T>> pageAristas) {
-        if (!pageAristas.isEmpty()) {
-            String code = "";
-            LinkedList<GraphArista<K, T>> list = pageAristas.getNodes();
-            if (!pageAristas.getPunteros().isEmpty()) {
-                for (BTreePage<GraphArista<K, T>> puntero : pageAristas.getPunteros()) {
-                    code +=  graficatePath(puntero);
-                }
-            }
-            for (GraphArista<K, T> graphVertex : list) {
-                for (WeightGraph<K, T> idTo : graphVertex.getIdsTo()) {
-                    String key = idTo.getIdToNode().toString().replace(" ", "");
-                    code += IDENTATION + graphVertex.getKeyFrom().toString().replace(" ", "")
-                            + "->" + key + ENTER;
-                }
-            }
-            return code;
-        } else {
+    
+    private String defineNodes(Grafo<LocationInfo, PathInfo> grafo){
+        BTree<NodeGraph<LocationInfo>> nodesTree = grafo.getNodes();
+        return graphTreeNode(nodesTree.getRaiz());
+    }
+    
+    private String graphTreeNode(BTreePage<NodeGraph<LocationInfo>> page){
+        if(page == null || page.isEmpty()){
             return "";
         }
-    }
-    
-    public void graphConditional(String finalPath, String nameFile, Graph<String, String> graph) 
-            throws IOException {
-        String code = "digraph {" + ENTER;
-        code += IDENTATION + "rankdir=LR;" + ENTER;
-        code += IDENTATION + declarateVariables(graph.getNodes()) + ENTER;
-        code += graficatePathConditional(graph.getAristas().getRaiz());
-        code += "}";
-        generator.generateImg(finalPath, nameFile, code);
-    }
-    
-    private String declarateVariables(BTree<String> nodos){
-        return "";
-    }
-    
-    private String graficatePathConditional(BTreePage<GraphArista<String, String>> pageAristas) {
-        //declarar las aritas con colores
-        if (!pageAristas.isEmpty()) {
-            String code = "";
-            LinkedList<GraphArista<String, String>> list = pageAristas.getNodes();
-            if (!pageAristas.getPunteros().isEmpty()) {
-                for (BTreePage<GraphArista<String, String>> puntero : pageAristas.getPunteros()) {
-                    code +=  graficatePathConditional(puntero);
-                }
+        String code = "";
+        for (int i = 0; i < page.getPunteros().size(); i++) { //graficar sus punteros
+            BTreePage subPage = (BTreePage) page.getPunteros().get(i);
+            code += graphTreeNode(subPage);
+        }
+        
+        for (NodeGraph<LocationInfo> node : page.getNodes()) { //graficar sus nodos
+            code += IDENTATION + node.getNumber() + "[label=\"" + node.getKey().getKeyLocation() + "\"";
+            if(node.getKey().isActive()){
+                code += " fillcolor=" + COLOR_SELECTED;
             }
-            for (GraphArista<String, String> graphVertex : list) {
-                for (WeightGraph<String, String> idTo : graphVertex.getIdsTo()) {
-                    String key = idTo.getIdToNode().replace(" ", "");
-                    code += IDENTATION + graphVertex.getKeyFrom().replace(" ", "")
-                            + "->" + key + ENTER;
+            code += "]" + ENTER;
+        }   
+        
+        return code;
+    }
+    
+    private String generateConnection(Grafo<LocationInfo, PathInfo> grafo){
+        if(grafo.isEmpty()){
+            return "";
+        } else {
+            String code = "";
+            for (int i = 0; i < grafo.getPaths().size(); i++) {
+                code += IDENTATION + i + "-> {";
+                for (int j = 0; j < grafo.getPaths().get(i).size(); j++) {
+                    if(grafo.getPaths().get(i).get(j) != null){
+                        code += j + " ";
+                    }
                 }
+                code += "}" + ENTER;
             }
             return code;
-        } else {
-            return "";
         }
     }
 

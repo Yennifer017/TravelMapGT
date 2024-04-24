@@ -30,11 +30,11 @@ public class GraphGrapher{
 
     private String getCode(Grafo<LocationInfo, PathInfo> grafo){
         String code = "digraph {" + ENTER;
-        code += IDENTATION + "ratio = fill;" + ENTER;
+        code += IDENTATION + "graph [size=\"500,500\", ratio=fill];" + ENTER;
         code += IDENTATION + "node [style=filled]" + ENTER;
         code += IDENTATION + "rankdir=LR;" + ENTER;
         code += defineNodes(grafo);
-        code += generateConnection(grafo);
+        code += generateConnection(grafo);  
         code += "}";
         return code;
     }
@@ -55,7 +55,8 @@ public class GraphGrapher{
         }
         
         for (NodeGraph<LocationInfo> node : page.getNodes()) { //graficar sus nodos
-            code += IDENTATION + node.getNumber() + "[label=\"" + node.getKey().getKeyLocation() + "\"";
+            code += IDENTATION + node.getNumber() + "[shape=circle label=\"" + node.getNumber() 
+                    + "-" + node.getKey().getKeyLocation() + "\"";
             if(node.getKey().isActive()){
                 code += " fillcolor=" + COLOR_SELECTED;
             }
@@ -66,13 +67,14 @@ public class GraphGrapher{
     }
     
     private String generateConnection(Grafo<LocationInfo, PathInfo> grafo){
+        int limit = grafo.getNodes().getSize();
         if(grafo.isEmpty()){
             return "";
         } else {
             String code = "";
-            for (int i = 0; i < grafo.getPaths().size(); i++) {
+            for (int i = 0; i < limit; i++) {
                 code += IDENTATION + i + "-> {";
-                for (int j = 0; j < grafo.getPaths().get(i).size(); j++) {
+                for (int j = 0; j < limit; j++) {
                     if(grafo.getPaths().get(i).get(j) != null){
                         code += j + " ";
                     }

@@ -1,4 +1,3 @@
-
 package compi1.travelmapgt.structures.graph;
 
 import lombok.Getter;
@@ -9,8 +8,10 @@ import lombok.Setter;
  * @author yennifer
  * @param <K>
  */
-@Getter @Setter 
-public class NodeGraph<K extends Comparable<K>> implements Comparable<NodeGraph<K>>{
+@Getter
+@Setter
+public class NodeGraph<K extends Comparable<K>> implements Comparable<NodeGraph<K>> {
+
     private K key;
     private int number;
 
@@ -18,8 +19,8 @@ public class NodeGraph<K extends Comparable<K>> implements Comparable<NodeGraph<
         this.key = key;
         this.number = number;
     }
-    
-    public NodeGraph(K key){
+
+    public NodeGraph(K key) {
         this.key = key;
         this.number = -1;
     }
@@ -27,5 +28,10 @@ public class NodeGraph<K extends Comparable<K>> implements Comparable<NodeGraph<
     @Override
     public int compareTo(NodeGraph<K> t) {
         return this.key.compareTo(t.key);
+    }
+    
+    @Override
+    public String toString(){
+        return this.key.toString();
     }
 }

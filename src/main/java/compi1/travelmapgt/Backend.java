@@ -2,6 +2,7 @@ package compi1.travelmapgt;
 
 import compi1.travelmapgt.files.DataCollector;
 import compi1.travelmapgt.files.FilesUtil;
+import compi1.travelmapgt.graphviz.BTreeGrapher;
 import compi1.travelmapgt.graphviz.GraphGrapher;
 import compi1.travelmapgt.models.LocationInfo;
 import compi1.travelmapgt.models.PathInfo;
@@ -13,8 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -26,6 +30,7 @@ public class Backend {
     private DataCollector dataCollector;
     private FilesUtil filesUtil;
     private GraphGrapher grafoGrapher;
+    private BTreeGrapher bTreeGrapher;
 
     private int globalGraphNum;
 
@@ -34,12 +39,13 @@ public class Backend {
         dataCollector = new DataCollector();
         filesUtil = new FilesUtil();
         grafoGrapher = new GraphGrapher();
+        bTreeGrapher = new BTreeGrapher();
     }
 
     //----------------------------DATOS DE HORA----------------------------
     public void setHour(Clock clock) {
         String hour = JOptionPane.showInputDialog(null, "Ingrese la hora (HH:MM):");
-        if (hour.matches("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+        if (hour != null && hour.matches("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
             String[] hourData = hour.split(":");
             LocalTime newTime = LocalTime.of(Integer.parseInt(hourData[0]), Integer.parseInt(hourData[1]));
             clock.adjust(newTime);
@@ -66,7 +72,7 @@ public class Backend {
         }
     }
 
-    public void readLocationInfo(JComboBox fromSelector, JComboBox toSelector) {
+    public void readLocationInfo(JPanel displayImg, JComboBox fromSelector, JComboBox toSelector) {
         grafo = new Grafo<>(); //reiniciar el grafo
         dataCollector.setGrafo(grafo);
         restartComboBox(fromSelector);
@@ -77,11 +83,25 @@ public class Backend {
             setAction(grafo.getNodes().getRaiz(), fromSelector);
             setAction(grafo.getNodes().getRaiz(), toSelector);
             grafoGrapher.graph(FilesUtil.RESOURCES_PATH, "globalGraph" + globalGraphNum, grafo);
-            //TODO actualizar la imagen
+            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" +globalGraphNum + ".dot");
+            initGraphImage(displayImg);
             verificateWarningsFiles();
         } catch (IOException ex) {
             showInesperatedError();
         }
+    }
+
+    private void initGraphImage(JPanel panel) {
+        panel.removeAll();
+        panel.revalidate();
+        ImageIcon imagen = new ImageIcon(FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".png");
+        JLabel disGlobalGraph = new JLabel(imagen);
+        System.out.println(panel.getWidth() + " - " + panel.getHeight());
+        disGlobalGraph.setBounds(0, 0,panel.getWidth(), panel.getHeight());
+        panel.add(disGlobalGraph);
+        System.out.println("Se acaba de setear la imagen correctamente");
+        panel.revalidate();
+        panel.repaint();
     }
 
     private void restartComboBox(JComboBox comboBox) {
@@ -92,12 +112,25 @@ public class Backend {
 
     private void setAction(BTreePage<NodeGraph<LocationInfo>> page, JComboBox comboBox) {
         if (page != null && !page.isEmpty()) {
-            for (int i = 0; i < page.getPunteros().size(); i++) { //agrega sus punteros
-                BTreePage subPage = (BTreePage) page.getPunteros().get(i);
-                setAction(subPage, comboBox);
-            }
-            for (NodeGraph<LocationInfo> node : page.getNodes()) { //agrega sus nodos
-                comboBox.addItem(node.getKey().getKeyLocation());
+            
+            if(page.getPunteros().isEmpty()){
+                for (NodeGraph<LocationInfo> node : page.getNodes()) { //agrega sus nodos
+                    comboBox.addItem(node.getKey().getKeyLocation());
+                }
+            } else {
+                //puntero nodo puntero
+                int indexNode = 0, indexPuntero = 0, index =0;
+                while (indexNode < page.getNodes().size() || indexPuntero < page.getPunteros().size()) {                
+                    if(index % 2 == 0){ //agrega sus punteros
+                        BTreePage subPage = (BTreePage) page.getPunteros().get(indexPuntero);
+                        setAction(subPage, comboBox);
+                        indexPuntero++;
+                    } else {
+                        comboBox.addItem(page.getNodes().get(indexNode).getKey().getKeyLocation());
+                        indexNode++;
+                    }
+                    index++;
+                }
             }
         }
     }
@@ -112,4 +145,5 @@ public class Backend {
         }
     }
 
+    //----------------------------CERRAR EL PROGRAMA----------------------------
 }

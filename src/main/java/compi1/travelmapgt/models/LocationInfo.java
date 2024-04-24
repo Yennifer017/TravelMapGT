@@ -21,5 +21,10 @@ public class LocationInfo implements Comparable<LocationInfo>{
     public int compareTo(LocationInfo t) {
         return this.keyLocation.compareTo(t.keyLocation);
     }
+    
+    @Override
+    public String toString(){
+        return keyLocation;
+    }
 
 }

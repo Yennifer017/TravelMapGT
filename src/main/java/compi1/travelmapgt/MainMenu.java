@@ -51,7 +51,9 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         bStart = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        jPanel2 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jComboBox5 = new javax.swing.JComboBox<>();
+        displayGraph = new javax.swing.JPanel();
         menu = new javax.swing.JMenuBar();
         dataMenu = new javax.swing.JMenu();
         LocationDataOp = new javax.swing.JMenuItem();
@@ -80,7 +82,7 @@ public class MainMenu extends javax.swing.JFrame {
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vehiculo", "Caminando" }));
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Distancia y Gasolina/Desgaste", "Dist, tiempo y trafico (vehiculo)", "La peor ruta" }));
+        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Distancia y Gasolina/Desgaste", "Dist, tiempo y trafico (vehiculo)" }));
 
         jLabel3.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(228, 228, 228));
@@ -105,6 +107,12 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel7.setText("Ruta:");
+
+        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "La mejor", "La peor" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -116,16 +124,17 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bStart)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(hourDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(toNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox3, 0, 240, Short.MAX_VALUE)
-                        .addComponent(jComboBox4, 0, 1, Short.MAX_VALUE)
-                        .addComponent(fromNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(bStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(hourDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(toNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboBox3, 0, 240, Short.MAX_VALUE)
+                    .addComponent(jComboBox4, 0, 1, Short.MAX_VALUE)
+                    .addComponent(fromNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboBox5, 0, 1, Short.MAX_VALUE))
                 .addContainerGap(16, Short.MAX_VALUE))
             .addComponent(jSeparator1)
         );
@@ -154,22 +163,26 @@ public class MainMenu extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addGap(37, 37, 37)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addGap(73, 73, 73)
                 .addComponent(bStart)
-                .addContainerGap(215, Short.MAX_VALUE))
+                .addContainerGap(131, Short.MAX_VALUE))
         );
 
-        jPanel2.setBackground(new java.awt.Color(2, 41, 58));
-        jPanel2.setForeground(new java.awt.Color(0, 63, 72));
+        displayGraph.setBackground(new java.awt.Color(2, 41, 58));
+        displayGraph.setForeground(new java.awt.Color(0, 63, 72));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout displayGraphLayout = new javax.swing.GroupLayout(displayGraph);
+        displayGraph.setLayout(displayGraphLayout);
+        displayGraphLayout.setHorizontalGroup(
+            displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 670, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        displayGraphLayout.setVerticalGroup(
+            displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -266,19 +279,19 @@ public class MainMenu extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(displayGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(displayGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void LocationDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LocationDataOpActionPerformed
-        backend.readLocationInfo(fromNodeCB, toNodeCB);
+        backend.readLocationInfo(displayGraph, fromNodeCB, toNodeCB);
     }//GEN-LAST:event_LocationDataOpActionPerformed
 
     private void TraficDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TraficDataOpActionPerformed
@@ -336,19 +349,21 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem continueClock;
     private javax.swing.JMenuItem creditsOp;
     private javax.swing.JMenu dataMenu;
+    private javax.swing.JPanel displayGraph;
     private javax.swing.JMenuItem exampleDataOp;
     private javax.swing.JComboBox<String> fromNodeCB;
     private javax.swing.JMenuItem helpOp;
     private javax.swing.JLabel hourDisplay;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JComboBox<String> jComboBox4;
+    private javax.swing.JComboBox<String> jComboBox5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem pauseClockOp;

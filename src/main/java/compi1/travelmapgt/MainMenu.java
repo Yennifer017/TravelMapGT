@@ -1,15 +1,7 @@
 package compi1.travelmapgt;
 
 import compi1.travelmapgt.util.Clock;
-import java.awt.FlowLayout;
-import java.time.LocalTime;
-import java.util.Calendar;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -19,6 +11,7 @@ public class MainMenu extends javax.swing.JFrame {
 
     private Clock clock;
     private Thread threadClock;
+    private Backend backend;
 
     /**
      * Creates new form MainMenu
@@ -27,6 +20,7 @@ public class MainMenu extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         initClock();
+        backend = new Backend();
     }
 
     private void initClock() {
@@ -47,8 +41,8 @@ public class MainMenu extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         hourDisplay = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        fromNodeCB = new javax.swing.JComboBox<>();
+        toNodeCB = new javax.swing.JComboBox<>();
         jComboBox3 = new javax.swing.JComboBox<>();
         jComboBox4 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
@@ -84,13 +78,9 @@ public class MainMenu extends javax.swing.JFrame {
         hourDisplay.setForeground(new java.awt.Color(228, 228, 228));
         hourDisplay.setText("00:00");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vehiculo", "Caminando" }));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Distancia y Gasolina/Desgaste", "Dist, tiempo y trafico (vehiculo)", "La peor ruta" }));
 
         jLabel3.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(228, 228, 228));
@@ -131,12 +121,12 @@ public class MainMenu extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(bStart)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(hourDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox2, 0, 195, Short.MAX_VALUE)
-                        .addComponent(jComboBox3, 0, 195, Short.MAX_VALUE)
-                        .addComponent(jComboBox4, 0, 195, Short.MAX_VALUE)))
-                .addContainerGap(17, Short.MAX_VALUE))
+                        .addComponent(toNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jComboBox3, 0, 240, Short.MAX_VALUE)
+                        .addComponent(jComboBox4, 0, 1, Short.MAX_VALUE)
+                        .addComponent(fromNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(16, Short.MAX_VALUE))
             .addComponent(jSeparator1)
         );
         jPanel1Layout.setVerticalGroup(
@@ -150,11 +140,11 @@ public class MainMenu extends javax.swing.JFrame {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fromNodeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(toNodeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -176,7 +166,7 @@ public class MainMenu extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 714, Short.MAX_VALUE)
+            .addGap(0, 670, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -288,26 +278,21 @@ public class MainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LocationDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LocationDataOpActionPerformed
-
+        backend.readLocationInfo(fromNodeCB, toNodeCB);
     }//GEN-LAST:event_LocationDataOpActionPerformed
 
     private void TraficDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TraficDataOpActionPerformed
-
+        backend.readTraficInfo();
     }//GEN-LAST:event_TraficDataOpActionPerformed
 
     private void exampleDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exampleDataOpActionPerformed
-
+        JOptionPane.showMessageDialog(null, """
+                                            Veanse ejemplos de archivos de entrada en 
+                                            el repositorio de GitHub del proyecto ;)""");
     }//GEN-LAST:event_exampleDataOpActionPerformed
 
     private void setHourOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setHourOpActionPerformed
-        String hour = JOptionPane.showInputDialog(null, "Ingrese la hora (HH:MM):");
-        if(hour.matches("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
-            String[] hourData = hour.split(":");
-            LocalTime newTime = LocalTime.of(Integer.parseInt(hourData[0]), Integer.parseInt(hourData[1]));
-            clock.adjust(newTime);
-        } else {
-            JOptionPane.showMessageDialog(null, "Formato de hora incorrecto.");
-        }
+        backend.setHour(clock);
     }//GEN-LAST:event_setHourOpActionPerformed
 
     private void resetHourOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetHourOpActionPerformed
@@ -332,7 +317,8 @@ public class MainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_creditsOpActionPerformed
 
     private void bStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStartActionPerformed
-        // TODO add your handling code here:
+        String opcionRecuperada = (String) fromNodeCB.getSelectedItem();
+        System.out.println("La opción seleccionada es: " + opcionRecuperada);
     }//GEN-LAST:event_bStartActionPerformed
 
     private void continueClockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueClockActionPerformed
@@ -351,10 +337,9 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem creditsOp;
     private javax.swing.JMenu dataMenu;
     private javax.swing.JMenuItem exampleDataOp;
+    private javax.swing.JComboBox<String> fromNodeCB;
     private javax.swing.JMenuItem helpOp;
     private javax.swing.JLabel hourDisplay;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
@@ -369,5 +354,6 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem pauseClockOp;
     private javax.swing.JMenuItem resetHourOp;
     private javax.swing.JMenuItem setHourOp;
+    private javax.swing.JComboBox<String> toNodeCB;
     // End of variables declaration//GEN-END:variables
 }

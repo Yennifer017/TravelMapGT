@@ -30,6 +30,7 @@ public class GraphGrapher{
 
     private String getCode(Grafo<LocationInfo, PathInfo> grafo){
         String code = "digraph {" + ENTER;
+        code += IDENTATION + "ratio = fill;" + ENTER;
         code += IDENTATION + "node [style=filled]" + ENTER;
         code += IDENTATION + "rankdir=LR;" + ENTER;
         code += defineNodes(grafo);

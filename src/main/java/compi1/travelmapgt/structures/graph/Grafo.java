@@ -30,6 +30,7 @@ public class Grafo<K extends Comparable<K>, W> {
             nodes.insert(nodeGraph);
             paths.add(new ArrayList<>());
             refillList(paths.get(paths.size()-1), paths.size());
+            updateAllLists();
         } else {
             throw new RepeatedDataException();
         }
@@ -38,6 +39,14 @@ public class Grafo<K extends Comparable<K>, W> {
     private void refillList(List<W> list, int number) {
         for (int i = 0; i < number; i++) {
             list.add(null);
+        }
+    }
+    
+    private void updateAllLists(){
+        /**para cada lista, exceptuando la ultima agregarle en la posicion final un null
+         */
+        for (int i = 0; i < paths.size()-1; i++) {
+            paths.get(i).add(null);
         }
     }
 

@@ -15,6 +15,8 @@ import javax.swing.JFileChooser;
  * @author yennifer
  */
 public class FilesUtil {
+    
+    public final static String RESOURCES_PATH = "../";
 
     /**
      * obtiene el texto contenido en un archivo y lo devuelve

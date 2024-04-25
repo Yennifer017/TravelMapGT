@@ -1,6 +1,7 @@
 package compi1.travelmapgt;
 
 import compi1.travelmapgt.util.Clock;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 /**
@@ -12,6 +13,13 @@ public class MainMenu extends javax.swing.JFrame {
     private Clock clock;
     private Thread threadClock;
     private Backend backend;
+   
+    protected final static int FROM_NODE = 0, TO_NODE = 1, 
+            TYPE_TRANS = 2, FILTER = 3, BEST_SPECIFICATION = 4;
+    
+    protected final static int VEHICLE_TYPE = 0;
+    
+    private JComboBox[] specifications;
 
     /**
      * Creates new form MainMenu
@@ -21,12 +29,22 @@ public class MainMenu extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         initClock();
         backend = new Backend();
+        initComboBox();
     }
 
     private void initClock() {
         clock = new Clock(hourDisplay);
         threadClock = new Thread(clock);
         threadClock.start();
+    }
+    
+    private void initComboBox(){
+        specifications = new JComboBox[5];
+        specifications[FROM_NODE] = fromNodeCB;
+        specifications[TO_NODE] = toNodeCB;
+        specifications[TYPE_TRANS] = transpCB;
+        specifications[FILTER] = filterCB;
+        specifications[BEST_SPECIFICATION] = typeRuteCB;
     }
 
     /**
@@ -43,8 +61,8 @@ public class MainMenu extends javax.swing.JFrame {
         hourDisplay = new javax.swing.JLabel();
         fromNodeCB = new javax.swing.JComboBox<>();
         toNodeCB = new javax.swing.JComboBox<>();
-        jComboBox3 = new javax.swing.JComboBox<>();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        transpCB = new javax.swing.JComboBox<>();
+        filterCB = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -52,7 +70,7 @@ public class MainMenu extends javax.swing.JFrame {
         bStart = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel7 = new javax.swing.JLabel();
-        jComboBox5 = new javax.swing.JComboBox<>();
+        typeRuteCB = new javax.swing.JComboBox<>();
         displayGraph = new javax.swing.JPanel();
         grafoDisplay = new javax.swing.JLabel();
         menu = new javax.swing.JMenuBar();
@@ -60,6 +78,7 @@ public class MainMenu extends javax.swing.JFrame {
         LocationDataOp = new javax.swing.JMenuItem();
         TraficDataOp = new javax.swing.JMenuItem();
         exampleDataOp = new javax.swing.JMenuItem();
+        restartIde = new javax.swing.JMenuItem();
         HourMenu = new javax.swing.JMenu();
         setHourOp = new javax.swing.JMenuItem();
         resetHourOp = new javax.swing.JMenuItem();
@@ -70,6 +89,7 @@ public class MainMenu extends javax.swing.JFrame {
         creditsOp = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(0, 47, 79));
 
@@ -81,9 +101,9 @@ public class MainMenu extends javax.swing.JFrame {
         hourDisplay.setForeground(new java.awt.Color(228, 228, 228));
         hourDisplay.setText("00:00");
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vehiculo", "Caminando" }));
+        transpCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vehiculo", "Caminando" }));
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Distancia y Gasolina/Desgaste", "Dist, tiempo y trafico (vehiculo)" }));
+        filterCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Distancia y Gasolina/Desgaste", "Dist, tiempo y trafico (vehiculo)" }));
 
         jLabel3.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(228, 228, 228));
@@ -112,7 +132,7 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel7.setForeground(new java.awt.Color(228, 228, 228));
         jLabel7.setText("Ruta:");
 
-        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "La mejor", "La peor" }));
+        typeRuteCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "La mejor", "La peor" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -132,10 +152,10 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(bStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(hourDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(toNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox3, 0, 240, Short.MAX_VALUE)
-                    .addComponent(jComboBox4, 0, 1, Short.MAX_VALUE)
+                    .addComponent(transpCB, 0, 240, Short.MAX_VALUE)
+                    .addComponent(filterCB, 0, 1, Short.MAX_VALUE)
                     .addComponent(fromNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox5, 0, 1, Short.MAX_VALUE))
+                    .addComponent(typeRuteCB, 0, 1, Short.MAX_VALUE))
                 .addContainerGap(16, Short.MAX_VALUE))
             .addComponent(jSeparator1)
         );
@@ -158,19 +178,19 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(jLabel4))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(transpCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(filterCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(typeRuteCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addGap(73, 73, 73)
                 .addComponent(bStart)
-                .addContainerGap(162, Short.MAX_VALUE))
+                .addContainerGap(283, Short.MAX_VALUE))
         );
 
         displayGraph.setBackground(new java.awt.Color(2, 41, 58));
@@ -182,7 +202,8 @@ public class MainMenu extends javax.swing.JFrame {
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(displayGraphLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 664, Short.MAX_VALUE))
+                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+                .addContainerGap())
         );
         displayGraphLayout.setVerticalGroup(
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,6 +238,14 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
         dataMenu.add(exampleDataOp);
+
+        restartIde.setText("Eliminar datos");
+        restartIde.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restartIdeActionPerformed(evt);
+            }
+        });
+        dataMenu.add(restartIde);
 
         menu.add(dataMenu);
 
@@ -336,13 +365,21 @@ public class MainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_creditsOpActionPerformed
 
     private void bStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStartActionPerformed
-        backend.findPaths(fromNodeCB, toNodeCB);
+        try {
+            backend.findPaths(specifications);
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "No hay datos para buscar el recorrido");
+        }
     }//GEN-LAST:event_bStartActionPerformed
 
     private void continueClockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueClockActionPerformed
         clock.restart();
         threadClock.interrupt();
     }//GEN-LAST:event_continueClockActionPerformed
+
+    private void restartIdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartIdeActionPerformed
+        backend.restartIde(fromNodeCB, toNodeCB, grafoDisplay);
+    }//GEN-LAST:event_restartIdeActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -356,13 +393,11 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JMenu dataMenu;
     private javax.swing.JPanel displayGraph;
     private javax.swing.JMenuItem exampleDataOp;
+    private javax.swing.JComboBox<String> filterCB;
     private javax.swing.JComboBox<String> fromNodeCB;
     private javax.swing.JLabel grafoDisplay;
     private javax.swing.JMenuItem helpOp;
     private javax.swing.JLabel hourDisplay;
-    private javax.swing.JComboBox<String> jComboBox3;
-    private javax.swing.JComboBox<String> jComboBox4;
-    private javax.swing.JComboBox<String> jComboBox5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -374,7 +409,10 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem pauseClockOp;
     private javax.swing.JMenuItem resetHourOp;
+    private javax.swing.JMenuItem restartIde;
     private javax.swing.JMenuItem setHourOp;
     private javax.swing.JComboBox<String> toNodeCB;
+    private javax.swing.JComboBox<String> transpCB;
+    private javax.swing.JComboBox<String> typeRuteCB;
     // End of variables declaration//GEN-END:variables
 }

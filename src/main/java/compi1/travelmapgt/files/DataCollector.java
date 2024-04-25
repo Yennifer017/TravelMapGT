@@ -1,5 +1,6 @@
 package compi1.travelmapgt.files;
 
+import compi1.travelmapgt.exceptions.InvalidDataException;
 import compi1.travelmapgt.exceptions.NoDataFoundException;
 import compi1.travelmapgt.exceptions.RepeatedDataException;
 import compi1.travelmapgt.models.LocationInfo;
@@ -18,31 +19,31 @@ import java.util.List;
  * @author yennifer
  */
 public class DataCollector {
-    
+
     private Grafo<LocationInfo, PathInfo> grafo;
     private List<String> warnings;
-    
+
     public DataCollector(Grafo<LocationInfo, PathInfo> grafo) {
         this.grafo = grafo;
         warnings = new ArrayList<>();
     }
-    
+
     public DataCollector() {
         warnings = new ArrayList<>();
     }
-    
-    public void setGrafo(Grafo<LocationInfo, PathInfo> grafo){
+
+    public void setGrafo(Grafo<LocationInfo, PathInfo> grafo) {
         this.grafo = grafo;
     }
-    
+
     public void readNodesData(File file) throws IOException {
         this.readData(file, false);
     }
-    
-    public void readTraficData(File file) throws IOException{
+
+    public void readTraficData(File file) throws IOException {
         this.readData(file, true);
     }
-    
+
     private void readNodeLine(String[] line, int numberLine) {
         LocationInfo from = new LocationInfo(line[0]);
         LocationInfo to = new LocationInfo(line[1]);
@@ -72,19 +73,19 @@ public class DataCollector {
                     + " - linea: " + numberLine);
         }
     }
-    
+
     public List<String> getWarnings() {
         return this.warnings;
     }
-    
-    public String getWarningsStr(){
+
+    public String getWarningsStr() {
         String text = "";
         for (int i = 0; i < warnings.size(); i++) {
             text += warnings.get(i) + "\n";
         }
         return text;
     }
-    
+
     private void readData(File file, boolean trafic) throws FileNotFoundException, IOException {
         warnings.clear();
         FileReader lector = new FileReader(file);
@@ -107,16 +108,34 @@ public class DataCollector {
         buffer.close();
         lector.close();
     }
-    
-    private void readTraficLine(String[] line, int numberLine){
+
+    private void readTraficLine(String[] line, int numberLine) {
         try {
             PathInfo pathInfo = grafo.getPath(new LocationInfo(line[0]), new LocationInfo(line[1]));
-            pathInfo.setHourInitTrafic(Integer.parseInt(line[2]));
-            pathInfo.setHourFinishTrafic(Integer.parseInt(line[3]));
-            pathInfo.setProbabilityTrafic(Integer.parseInt(line[4]));
+            int hourInit = Integer.parseInt(line[2]);
+            int hourFinish = Integer.parseInt(line[3]);
+            int probabilityTrafic = Integer.parseInt(line[4]);
+            if (validHour(hourInit) && validHour(hourFinish) && validProbability(probabilityTrafic)) {
+                pathInfo.setHourInitTrafic(hourInit);
+                pathInfo.setHourFinishTrafic(hourFinish);
+                pathInfo.setProbabilityTrafic(probabilityTrafic);
+            } else {
+                throw new InvalidDataException("Formato de 24 horas o probabilidad invalida"
+                        + " - linea: " + numberLine);
+            }
         } catch (NoDataFoundException ex) {
             warnings.add("Camino no encontrado, no se pudieron setear las horas de trafico."
-                + " - linea: " + numberLine);
+                    + " - linea: " + numberLine);
+        } catch (InvalidDataException ex) {
+            warnings.add(ex.getMessage());
         }
+    }
+
+    private boolean validHour(int hour24) {
+        return hour24 >= 0 && hour24 < 24;
+    }
+
+    private boolean validProbability(int probability) {
+        return probability >= 0 && probability <= 100;
     }
 }

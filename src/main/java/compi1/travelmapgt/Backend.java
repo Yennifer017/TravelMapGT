@@ -17,8 +17,6 @@ import compi1.travelmapgt.util.Clock;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -100,8 +98,6 @@ public class Backend {
 
     private void initGraphImage(JLabel label) {
         label.setIcon(null);
-        label.updateUI();
-        label.removeAll();
         label.revalidate();
         label.repaint();
         String path = FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".png";
@@ -109,6 +105,8 @@ public class Backend {
         label.setIcon(imageIcon);
         label.revalidate();
         label.repaint();
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum-1) + ".dot");
+        globalGraphNum++;
     }
 
     private void restartComboBox(JComboBox comboBox) {
@@ -153,16 +151,20 @@ public class Backend {
     }
 
     //----------------------------BUSQUEDA DE NODOS----------------------------
-    public void findPaths(JComboBox from, JComboBox to){
-        if(from.getSelectedItem().toString().equals((String)to.getSelectedItem())){
+    public void findPaths(JComboBox[] specifications){
+        if(specifications[MainMenu.FROM_NODE].getSelectedItem().toString()
+                .equals((String)specifications[MainMenu.TO_NODE].getSelectedItem())){
             JOptionPane.showMessageDialog(null, "El nodo seleccionado es el mismo");
         }else {
             try {
+                boolean extendedPath = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE;
+                System.out.println(specifications[MainMenu.TYPE_TRANS].getSelectedIndex());
+                System.out.println(extendedPath);
                 BTree<Recorrido> recorridos = searchearPath.findPath(
                         grafo,
-                        new LocationInfo((String) from.getSelectedItem()),
-                        new LocationInfo((String) to.getSelectedItem()), 
-                        true
+                        new LocationInfo((String) specifications[MainMenu.FROM_NODE].getSelectedItem()),
+                        new LocationInfo((String) specifications[MainMenu.TO_NODE].getSelectedItem()), 
+                        extendedPath
                 );
                 bTreeGrapher.graph(FilesUtil.RESOURCES_PATH, "arbol_recorridos", recorridos);
             } catch (NoDataFoundException | IOException ex) {
@@ -172,5 +174,13 @@ public class Backend {
     }
     
     
-    //----------------------------CERRAR EL PROGRAMA----------------------------
+    //----------------------------CERRAR/REINICIAR EL PROGRAMA----------------------------
+    
+    public void restartIde(JComboBox from, JComboBox to, JLabel label){
+        restartComboBox(from);
+        restartComboBox(to);
+        label.setIcon(null);
+        label.revalidate();
+        label.repaint();
+    }
 }

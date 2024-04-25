@@ -27,7 +27,7 @@ public class ImageGenerator {
         File file = new File(finalPathDotFile);
         filesUtil.saveFile(code, file);
         MutableGraph mutableGrap = new Parser().read(file);
-        Graphviz.fromGraph(mutableGrap).height(650).width(650)
+        Graphviz.fromGraph(mutableGrap).height(670).width(670)
                 .render(Format.PNG).toFile(new File(finalPath + nameFile + ".png"));
     }
     

@@ -7,10 +7,11 @@ import lombok.Setter;
 /**
  *
  * @author yennifer
+ * @param <K>
  */
 @Getter
 @Setter
-public class NodeNum<K> implements Comparable<NodeNum<K>>{
+public class NodeNum<K extends Comparable<K>> implements Comparable<NodeNum<K>>{
     private K key;
     private int number;
 
@@ -31,6 +32,10 @@ public class NodeNum<K> implements Comparable<NodeNum<K>>{
     @Override
     public int compareTo(NodeNum<K> t) {
         return Integer.compare(this.number, t.number);
+    }
+    
+    public NodeGraph<K> convertToNodeGraph(){
+        return new NodeGraph<>(key, number);
     }
 
 }

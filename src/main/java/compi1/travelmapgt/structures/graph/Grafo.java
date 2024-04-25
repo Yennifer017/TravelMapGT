@@ -75,6 +75,16 @@ public class Grafo<K extends Comparable<K>, W> {
         return nodesByNumber.find(new NodeNum<>(code)).getKey();
     }
     
+    protected NodeNum<K> getNodeNum(int code) throws NoDataFoundException{
+        NodeNum<K> nodeNum = new NodeNum<>(code);
+        return nodesByNumber.find(nodeNum);
+    }
+    
+    protected NodeGraph<K> getNodeGraph(K key) throws NoDataFoundException{
+        NodeGraph<K> nodeGraph = new NodeGraph<>(key);
+        return nodes.find(nodeGraph);
+    }
+    
     public W getPath(K fromKey, K toKey) throws NoDataFoundException{
         NodeGraph nodeFrom = new NodeGraph(fromKey);
         NodeGraph nodeTo = new NodeGraph(toKey);
@@ -85,6 +95,13 @@ public class Grafo<K extends Comparable<K>, W> {
     
     public W getPath(int codeFrom, int codeTo) throws IndexOutOfBoundsException{
         return paths.get(codeFrom).get(codeTo);
+    }
+    
+    public W getPath(K fromKey, int codeTo) 
+            throws NoDataFoundException, IndexOutOfBoundsException {
+        NodeGraph nodeFrom = new NodeGraph(fromKey);
+        nodeFrom.setNumber(nodes.find(nodeFrom).getNumber());
+        return paths.get(nodeFrom.getNumber()).get(codeTo);
     }
 
 }

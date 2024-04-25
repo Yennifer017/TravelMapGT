@@ -34,4 +34,8 @@ public class NodeGraph<K extends Comparable<K>> implements Comparable<NodeGraph<
     public String toString(){
         return this.key.toString();
     }
+    
+    public NodeNum<K> convertToNodeNum(){
+        return new NodeNum<>(key, number);
+    }
 }

@@ -54,6 +54,7 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jComboBox5 = new javax.swing.JComboBox<>();
         displayGraph = new javax.swing.JPanel();
+        grafoDisplay = new javax.swing.JLabel();
         menu = new javax.swing.JMenuBar();
         dataMenu = new javax.swing.JMenu();
         LocationDataOp = new javax.swing.JMenuItem();
@@ -169,7 +170,7 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(jLabel7))
                 .addGap(73, 73, 73)
                 .addComponent(bStart)
-                .addContainerGap(131, Short.MAX_VALUE))
+                .addContainerGap(162, Short.MAX_VALUE))
         );
 
         displayGraph.setBackground(new java.awt.Color(2, 41, 58));
@@ -179,11 +180,16 @@ public class MainMenu extends javax.swing.JFrame {
         displayGraph.setLayout(displayGraphLayout);
         displayGraphLayout.setHorizontalGroup(
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 670, Short.MAX_VALUE)
+            .addGroup(displayGraphLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 664, Short.MAX_VALUE))
         );
         displayGraphLayout.setVerticalGroup(
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(displayGraphLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         dataMenu.setText("Datos");
@@ -291,7 +297,7 @@ public class MainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LocationDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LocationDataOpActionPerformed
-        backend.readLocationInfo(displayGraph, fromNodeCB, toNodeCB);
+        backend.readLocationInfo(grafoDisplay, fromNodeCB, toNodeCB);
     }//GEN-LAST:event_LocationDataOpActionPerformed
 
     private void TraficDataOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TraficDataOpActionPerformed
@@ -330,8 +336,7 @@ public class MainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_creditsOpActionPerformed
 
     private void bStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStartActionPerformed
-        String opcionRecuperada = (String) fromNodeCB.getSelectedItem();
-        System.out.println("La opción seleccionada es: " + opcionRecuperada);
+        backend.findPaths(fromNodeCB, toNodeCB);
     }//GEN-LAST:event_bStartActionPerformed
 
     private void continueClockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueClockActionPerformed
@@ -352,6 +357,7 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JPanel displayGraph;
     private javax.swing.JMenuItem exampleDataOp;
     private javax.swing.JComboBox<String> fromNodeCB;
+    private javax.swing.JLabel grafoDisplay;
     private javax.swing.JMenuItem helpOp;
     private javax.swing.JLabel hourDisplay;
     private javax.swing.JComboBox<String> jComboBox3;

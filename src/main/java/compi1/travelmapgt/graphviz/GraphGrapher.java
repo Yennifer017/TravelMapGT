@@ -25,12 +25,12 @@ public class GraphGrapher{
 }
 
     public void graph(String finalPath, String nameFile, Grafo<LocationInfo, PathInfo> grafo) throws IOException {
-        generator.generateImg(finalPath, nameFile, getCode(grafo));
+        generator.generateSmallImg(finalPath, nameFile, getCode(grafo));
     }
 
     private String getCode(Grafo<LocationInfo, PathInfo> grafo){
         String code = "digraph {" + ENTER;
-        code += IDENTATION + "graph [size=\"500,500\", ratio=fill];" + ENTER;
+        code += IDENTATION + "graph [width=400 height=400 ratio=1]" + ENTER;
         code += IDENTATION + "node [style=filled]" + ENTER;
         code += IDENTATION + "rankdir=LR;" + ENTER;
         code += defineNodes(grafo);

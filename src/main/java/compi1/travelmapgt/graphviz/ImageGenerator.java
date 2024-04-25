@@ -1,6 +1,10 @@
 package compi1.travelmapgt.graphviz;
 
 import compi1.travelmapgt.files.FilesUtil;
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,14 +22,22 @@ public class ImageGenerator {
         filesUtil = new FilesUtil();
     }
 
+    public void generateSmallImg(String finalPath, String nameFile, String code) throws IOException {
+        String finalPathDotFile = finalPath + nameFile + DOT_EXTENSION;
+        File file = new File(finalPathDotFile);
+        filesUtil.saveFile(code, file);
+        MutableGraph mutableGrap = new Parser().read(file);
+        Graphviz.fromGraph(mutableGrap).height(650).width(650)
+                .render(Format.PNG).toFile(new File(finalPath + nameFile + ".png"));
+    }
+    
     public void generateImg(String finalPath, String nameFile, String code) throws IOException {
         String finalPathDotFile = finalPath + nameFile + DOT_EXTENSION;
         File file = new File(finalPathDotFile);
         filesUtil.saveFile(code, file);
-        String[] cmd = {getExecutComand(), "-Tpng", finalPathDotFile, "-o", finalPath + nameFile + ".png"};
-
-        Runtime rt = Runtime.getRuntime();
-        rt.exec(cmd);
+        MutableGraph mutableGrap = new Parser().read(file);
+        Graphviz.fromGraph(mutableGrap)
+                .render(Format.PNG).toFile(new File(finalPath + nameFile + ".png"));
     }
 
     public static String getExecutComand() {

@@ -14,32 +14,42 @@ import java.util.List;
  */
 public class SearcherPath {
 
-    public BTree<Recorrido> findPath(Grafo<LocationInfo, PathInfo> graph, LocationInfo start, LocationInfo finish) 
+    public BTree<Recorrido> findPath(Grafo<LocationInfo, PathInfo> graph, LocationInfo start,
+            LocationInfo finish, boolean extendedPath)
             throws NoDataFoundException {
         BTree<Recorrido> recorridos = new BTree<>(5);
         List<Integer> nodesAlreadyPass = new ArrayList<>();
         NodeNum<LocationInfo> startNode = graph.getNodeGraph(start).convertToNodeNum();
         nodesAlreadyPass.add(startNode.getNumber());
-        savePath(graph, 
-                startNode, 
-                nodesAlreadyPass, 
-                graph.getNodeGraph(finish), 
-                recorridos
-        );
+        if (!extendedPath) {
+            savePath(graph,
+                    startNode,
+                    nodesAlreadyPass,
+                    graph.getNodeGraph(finish),
+                    recorridos
+            );
+        } else {
+            saveExtendedPath(graph, 
+                    startNode, 
+                    nodesAlreadyPass, 
+                    graph.getNodeGraph(finish), 
+                    recorridos
+            );
+        }
         return recorridos;
     }
 
-    private void savePath(Grafo<LocationInfo, PathInfo> grafo, NodeNum<LocationInfo> currentNode, 
-            List<Integer> nodesAlreadyPass, NodeGraph<LocationInfo> destinity, BTree<Recorrido> recorridos) 
+    private void savePath(Grafo<LocationInfo, PathInfo> grafo, NodeNum<LocationInfo> currentNode,
+            List<Integer> nodesAlreadyPass, NodeGraph<LocationInfo> destinity, BTree<Recorrido> recorridos)
             throws NoDataFoundException {
         for (int i = 0; i < grafo.getNodes().getSize(); i++) {
-            if(grafo.getPath(currentNode.getKey(), i) != null){
-                if(grafo.getNodeNum(i).getNumber() == destinity.getNumber()){ //si es el destino
+            if (grafo.getPath(currentNode.getKey(), i) != null) {
+                if (grafo.getNodeNum(i).getNumber() == destinity.getNumber()) { //si es el destino
                     List<Integer> correctPath = new ArrayList<>(nodesAlreadyPass);
                     correctPath.add(i);
                     recorridos.insert(new Recorrido(correctPath, recorridos.getSize(), grafo));
                 } else {
-                    if(!exist(nodesAlreadyPass, i)){
+                    if (!exist(nodesAlreadyPass, i)) {
                         List<Integer> newPath = new ArrayList<>(nodesAlreadyPass);
                         newPath.add(i);
                         savePath(grafo, grafo.getNodeNum(i), newPath, destinity, recorridos);
@@ -49,12 +59,32 @@ public class SearcherPath {
         }
     }
     
-    private boolean exist(List<Integer> nodesAlreadyPass, int current){
-        if(nodesAlreadyPass.isEmpty()){
+    private void saveExtendedPath(Grafo<LocationInfo, PathInfo> grafo, NodeNum<LocationInfo> currentNode,
+            List<Integer> nodesAlreadyPass, NodeGraph<LocationInfo> destinity, BTree<Recorrido> recorridos)
+            throws NoDataFoundException {
+        for (int i = 0; i < grafo.getNodes().getSize(); i++) {
+            if (grafo.getPath(currentNode.getKey(), i) != null || grafo.getPath(i, currentNode.getKey()) != null) {
+                if (grafo.getNodeNum(i).getNumber() == destinity.getNumber()) { //si es el destino
+                    List<Integer> correctPath = new ArrayList<>(nodesAlreadyPass);
+                    correctPath.add(i);
+                    recorridos.insert(new Recorrido(correctPath, recorridos.getSize(), grafo));
+                } else {
+                    if (!exist(nodesAlreadyPass, i)) {
+                        List<Integer> newPath = new ArrayList<>(nodesAlreadyPass);
+                        newPath.add(i);
+                        saveExtendedPath(grafo, grafo.getNodeNum(i), newPath, destinity, recorridos);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean exist(List<Integer> nodesAlreadyPass, int current) {
+        if (nodesAlreadyPass.isEmpty()) {
             return false;
         }
         for (Integer node : nodesAlreadyPass) {
-            if(node == current){
+            if (node == current) {
                 return true;
             }
         }

@@ -161,7 +161,8 @@ public class Backend {
                 BTree<Recorrido> recorridos = searchearPath.findPath(
                         grafo,
                         new LocationInfo((String) from.getSelectedItem()),
-                        new LocationInfo((String) to.getSelectedItem())
+                        new LocationInfo((String) to.getSelectedItem()), 
+                        true
                 );
                 bTreeGrapher.graph(FilesUtil.RESOURCES_PATH, "arbol_recorridos", recorridos);
             } catch (NoDataFoundException | IOException ex) {

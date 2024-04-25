@@ -103,5 +103,11 @@ public class Grafo<K extends Comparable<K>, W> {
         nodeFrom.setNumber(nodes.find(nodeFrom).getNumber());
         return paths.get(nodeFrom.getNumber()).get(codeTo);
     }
+    
+    public W getPath(int codeFrom, K toKey) throws NoDataFoundException, IndexOutOfBoundsException{
+        NodeGraph nodeTo = new NodeGraph(toKey);
+        nodeTo.setNumber(nodes.find(nodeTo).getNumber());
+        return paths.get(codeFrom).get(nodeTo.getNumber());
+    }
 
 }

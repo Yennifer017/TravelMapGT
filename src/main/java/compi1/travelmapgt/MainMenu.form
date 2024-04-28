@@ -286,7 +286,7 @@
               <StringArray count="4">
                 <StringItem index="0" value="Gasolina / Desgaste Fisico"/>
                 <StringItem index="1" value="Distancia"/>
-                <StringItem index="2" value="Distancia y Gasolina/Desgaste"/>
+                <StringItem index="2" value="Dist y Gasolina/Dist yDesgaste"/>
                 <StringItem index="3" value="Dist, tiempo y trafico (vehiculo)"/>
               </StringArray>
             </Property>

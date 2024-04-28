@@ -1,42 +1,147 @@
-
 package compi1.travelmapgt.models;
 
+import compi1.travelmapgt.MainMenu;
 import compi1.travelmapgt.exceptions.NoDataFoundException;
+import compi1.travelmapgt.exceptions.NoPathException;
 import compi1.travelmapgt.structures.graph.Grafo;
+import compi1.travelmapgt.util.Clock;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  *
  * @author yennifer
  */
-@Getter @Setter
-public class Recorrido implements Comparable<Recorrido>{
+@Getter
+@Setter
+@NoArgsConstructor
+public class Recorrido implements Comparable<Recorrido> {
+    
     private List<Integer> recorrido;
     private int code;
     private Grafo<LocationInfo, PathInfo> graph;
-    private int weight;
-
+    private float weight;
+    
     public Recorrido(List<Integer> recorrido, int code, Grafo<LocationInfo, PathInfo> graph) {
         this.recorrido = recorrido;
         this.code = code;
         this.graph = graph;
     }
     
-
+    public void findWeight(FilterSpecifications filters, Clock clock) throws NoPathException {
+        if (filters.isExtendedPath()) {
+            findWeightInExtendedPath(filters);
+        } else {
+            findWeighInDirigitePath(filters, clock);
+        }
+    }
+    
+    private void findWeightInExtendedPath(FilterSpecifications filters) throws NoPathException {
+        if (this.graph.isEmpty() || recorrido.isEmpty()) {
+            throw new NoPathException();
+        }
+        for (int i = 0; i < this.recorrido.size(); i++) {
+            if (i != this.recorrido.size() - 1) { //diferente al penultimo
+                PathInfo pathInfo;
+                try {
+                    pathInfo = graph.getPath(recorrido.get(i), recorrido.get(i + 1));
+                } catch (IndexOutOfBoundsException e) {
+                    try {
+                        pathInfo = graph.getPath(recorrido.get(i + 1), recorrido.get(i));
+                    } catch (IndexOutOfBoundsException ex) {
+                        throw new NoPathException();
+                    }
+                }
+                //ARREGLAR AQUI, NO QUIERO NULLS
+                switch (filters.getTypeFilter()) {
+                    case MainMenu.RESOURCES_FILTER:
+                        this.weight += pathInfo.getCostWalking();
+                        break;
+                    case MainMenu.DISTANCE_FILTER:
+                        this.weight += pathInfo.getDistance();
+                        break;
+                    case MainMenu.RESOURCES_DISTANCE_FILTER:
+                        this.weight += pathInfo.getCostWalking() + pathInfo.getDistance();
+                        break;
+                    case MainMenu.ALL_FILTER:
+                        this.weight += pathInfo.getDistance() / pathInfo.getAverageTimeWalking();
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+            }
+        }
+    }
+    
+    private void findWeighInDirigitePath(FilterSpecifications filters, Clock clock) throws NoPathException {
+        if (this.graph.isEmpty() || recorrido.isEmpty()) {
+            throw new NoPathException();
+        }
+        LocalTime currentTime = clock.getCurrentTime();
+        for (int i = 0; i < this.recorrido.size(); i++) {
+            if (i != this.recorrido.size() - 1) { //diferente al penultimo
+                PathInfo pathInfo = graph.getPath(recorrido.get(i), recorrido.get(i + 1));
+                switch (filters.getTypeFilter()) {
+                    case MainMenu.RESOURCES_FILTER:
+                        this.weight += pathInfo.getCostGas();
+                        break;
+                    case MainMenu.DISTANCE_FILTER:
+                        this.weight += pathInfo.getDistance();
+                        break;
+                    case MainMenu.RESOURCES_DISTANCE_FILTER:
+                        this.weight += pathInfo.getCostGas() + pathInfo.getDistance();
+                        break;
+                    case MainMenu.ALL_FILTER:
+                        int traficProbability = clock.calculateTraficProbability(currentTime, pathInfo);
+                        this.weight += pathInfo.getDistance() / (pathInfo.getAverageTimeCar() * (1 + traficProbability));
+                        if(clock.isActive()){
+                            currentTime = currentTime.plusMinutes(pathInfo.getAverageTimeCar());
+                        }
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+            }
+        }
+    }
+    
+    public void showInGraph(){
+        modifyRecorrido(true);
+    }
+    
+    public void hiddeInGraph(){
+        modifyRecorrido(false);
+    }
+    
+    private void modifyRecorrido(boolean active){
+        if (!recorrido.isEmpty()) {
+            for (Integer actual : recorrido) {
+                try {
+                    this.graph.getNode(actual).setActive(active);
+                } catch (NoDataFoundException ex) {
+                    Logger.getLogger(Recorrido.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
     @Override
     public int compareTo(Recorrido t) {
         return Integer.compare(this.code, t.code);
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         String label = "";
         for (int i = 0; i < recorrido.size(); i++) {
             try {
                 label += graph.getNode(recorrido.get(i)).getKeyLocation();
-                if(i != recorrido.size() -1){
+                if (i != recorrido.size() - 1) {
                     label += "-";
                 }
             } catch (NoDataFoundException ex) {

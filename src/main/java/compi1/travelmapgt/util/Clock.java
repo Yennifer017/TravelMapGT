@@ -1,6 +1,7 @@
 
 package compi1.travelmapgt.util;
 
+import compi1.travelmapgt.models.PathInfo;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JLabel;
@@ -34,6 +35,27 @@ public class Clock implements Runnable{
     
     public void restartHour(){
         this.currentTime = LocalTime.now();
+    }
+    
+    public void setDisplayTime(JLabel display){
+        this.displayTime = display;
+    }
+    
+    public LocalTime getCurrentTime(){
+        return this.currentTime;
+    }
+    
+    public int calculateTraficProbability(LocalTime currentTime, PathInfo pathInfo){
+        if (currentTime.isAfter(pathInfo.getHourInitTrafic()) //dentro del rango
+                && currentTime.isBefore(pathInfo.getHourFinishTrafic())) {
+            return pathInfo.getProbabilityTrafic();
+        } else {
+            return 0;
+        }
+    }
+    
+    public boolean isActive(){
+        return this.active;
     }
 
     @Override

@@ -29,6 +29,7 @@ public class ImageGenerator {
         MutableGraph mutableGrap = new Parser().read(file);
         Graphviz.fromGraph(mutableGrap).height(670).width(670)
                 .render(Format.PNG).toFile(new File(finalPath + nameFile + ".png"));
+        filesUtil.deleteFile(finalPathDotFile);
     }
     
     public void generateImg(String finalPath, String nameFile, String code) throws IOException {
@@ -38,6 +39,7 @@ public class ImageGenerator {
         MutableGraph mutableGrap = new Parser().read(file);
         Graphviz.fromGraph(mutableGrap)
                 .render(Format.PNG).toFile(new File(finalPath + nameFile + ".png"));
+        filesUtil.deleteFile(finalPathDotFile);
     }
 
     public static String getExecutComand() {

@@ -1,6 +1,5 @@
 package compi1.travelmapgt;
 
-import compi1.travelmapgt.util.Clock;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
@@ -10,15 +9,17 @@ import javax.swing.JOptionPane;
  */
 public class MainMenu extends javax.swing.JFrame {
 
-    private Clock clock;
-    private Thread threadClock;
     private Backend backend;
-   
-    protected final static int FROM_NODE = 0, TO_NODE = 1, 
+
+    protected final static int FROM_NODE = 0, TO_NODE = 1,
             TYPE_TRANS = 2, FILTER = 3, BEST_SPECIFICATION = 4;
-    
+
     protected final static int VEHICLE_TYPE = 0;
-    
+
+    protected final static int BEST_ROUTE = 0;
+    public final static int RESOURCES_FILTER = 0, DISTANCE_FILTER = 1, RESOURCES_DISTANCE_FILTER = 2,
+            ALL_FILTER = 3;
+
     private JComboBox[] specifications;
 
     /**
@@ -27,18 +28,12 @@ public class MainMenu extends javax.swing.JFrame {
     public MainMenu() {
         initComponents();
         this.setLocationRelativeTo(null);
-        initClock();
-        backend = new Backend();
+        backend = new Backend(this);
         initComboBox();
+        backend.initClock(hourDisplay);
     }
 
-    private void initClock() {
-        clock = new Clock(hourDisplay);
-        threadClock = new Thread(clock);
-        threadClock.start();
-    }
-    
-    private void initComboBox(){
+    private void initComboBox() {
         specifications = new JComboBox[5];
         specifications[FROM_NODE] = fromNodeCB;
         specifications[TO_NODE] = toNodeCB;
@@ -103,7 +98,7 @@ public class MainMenu extends javax.swing.JFrame {
 
         transpCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vehiculo", "Caminando" }));
 
-        filterCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Distancia y Gasolina/Desgaste", "Dist, tiempo y trafico (vehiculo)" }));
+        filterCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Dist y Gasolina/Dist yDesgaste", "Dist, tiempo y trafico (vehiculo)" }));
 
         jLabel3.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(228, 228, 228));
@@ -340,15 +335,15 @@ public class MainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_exampleDataOpActionPerformed
 
     private void setHourOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setHourOpActionPerformed
-        backend.setHour(clock);
+        backend.defineHour();
     }//GEN-LAST:event_setHourOpActionPerformed
 
     private void resetHourOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetHourOpActionPerformed
-        clock.restartHour();
+        backend.getClock().restartHour();
     }//GEN-LAST:event_resetHourOpActionPerformed
 
     private void pauseClockOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseClockOpActionPerformed
-        clock.stop();
+        backend.getClock().stop();
     }//GEN-LAST:event_pauseClockOpActionPerformed
 
     private void helpOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpOpActionPerformed
@@ -368,13 +363,13 @@ public class MainMenu extends javax.swing.JFrame {
         try {
             backend.findPaths(specifications);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "No hay datos para buscar el recorrido");
         }
     }//GEN-LAST:event_bStartActionPerformed
 
     private void continueClockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueClockActionPerformed
-        clock.restart();
-        threadClock.interrupt();
+        backend.resumeCountHour();
     }//GEN-LAST:event_continueClockActionPerformed
 
     private void restartIdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartIdeActionPerformed

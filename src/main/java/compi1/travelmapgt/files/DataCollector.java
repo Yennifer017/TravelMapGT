@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,8 +117,15 @@ public class DataCollector {
             int hourFinish = Integer.parseInt(line[3]);
             int probabilityTrafic = Integer.parseInt(line[4]);
             if (validHour(hourInit) && validHour(hourFinish) && validProbability(probabilityTrafic)) {
-                pathInfo.setHourInitTrafic(hourInit);
-                pathInfo.setHourFinishTrafic(hourFinish);
+                if( ((hourInit > hourFinish ) && hourFinish != 0) || (hourInit == hourFinish)){
+                    throw new InvalidDataException("Horarios incongruentes de trafico - linea:" + numberLine);
+                }
+                pathInfo.setHourInitTrafic(LocalTime.of(hourInit, 0));
+                pathInfo.setHourFinishTrafic(
+                        hourFinish == 0 ? 
+                        LocalTime.of(23, 59) : 
+                        LocalTime.of(hourFinish, 0)
+                );
                 pathInfo.setProbabilityTrafic(probabilityTrafic);
             } else {
                 throw new InvalidDataException("Formato de 24 horas o probabilidad invalida"

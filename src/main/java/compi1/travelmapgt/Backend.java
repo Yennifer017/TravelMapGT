@@ -1,10 +1,12 @@
 package compi1.travelmapgt;
 
 import compi1.travelmapgt.exceptions.NoDataFoundException;
+import compi1.travelmapgt.exceptions.NoPathException;
 import compi1.travelmapgt.files.DataCollector;
 import compi1.travelmapgt.files.FilesUtil;
 import compi1.travelmapgt.graphviz.BTreeGrapher;
 import compi1.travelmapgt.graphviz.GraphGrapher;
+import compi1.travelmapgt.models.FilterSpecifications;
 import compi1.travelmapgt.models.LocationInfo;
 import compi1.travelmapgt.models.PathInfo;
 import compi1.travelmapgt.models.Recorrido;
@@ -20,6 +22,7 @@ import java.time.LocalTime;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -35,20 +38,26 @@ public class Backend {
     private GraphGrapher grafoGrapher;
     private BTreeGrapher bTreeGrapher;
     private SearcherPath searchearPath;
+    private JFrame fronted;
+
+    private Clock clock;
+    private Thread threadClock;
 
     private int globalGraphNum;
+    private int recorridoNum;
 
-    public Backend() {
+    public Backend(JFrame fronted) {
         grafo = new Grafo<>();
         dataCollector = new DataCollector();
         filesUtil = new FilesUtil();
         grafoGrapher = new GraphGrapher();
         bTreeGrapher = new BTreeGrapher();
         searchearPath = new SearcherPath();
+        this.fronted = fronted;
     }
 
     //----------------------------DATOS DE HORA----------------------------
-    public void setHour(Clock clock) {
+    public void defineHour() {
         String hour = JOptionPane.showInputDialog(null, "Ingrese la hora (HH:MM):");
         if (hour != null && hour.matches("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
             String[] hourData = hour.split(":");
@@ -57,6 +66,21 @@ public class Backend {
         } else {
             JOptionPane.showMessageDialog(null, "Formato de hora incorrecto.");
         }
+    }
+
+    public void initClock(JLabel hourDisplay) {
+        clock = new Clock(hourDisplay);
+        threadClock = new Thread(clock);
+        threadClock.start();
+    }
+    
+    public Clock getClock(){
+        return this.clock;
+    }
+    
+    public void resumeCountHour(){
+        clock.restart();
+        threadClock.interrupt();
     }
 
     //----------------------------ARCHIVOS----------------------------
@@ -88,34 +112,31 @@ public class Backend {
             setAction(grafo.getNodes().getRaiz(), fromSelector);
             setAction(grafo.getNodes().getRaiz(), toSelector);
             grafoGrapher.graph(FilesUtil.RESOURCES_PATH, "globalGraph" + globalGraphNum, grafo);
-            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".dot");
-            initGraphImage(label);
+            initGraphImage(label, FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".png");
+            globalGraphNum++;
             verificateWarningsFiles();
         } catch (IOException ex) {
             showInesperatedError();
         }
     }
 
-    private void initGraphImage(JLabel label) {
+    private void initGraphImage(JLabel label, String path) {
         label.setIcon(null);
         label.revalidate();
         label.repaint();
-        String path = FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".png";
         ImageIcon imageIcon = new ImageIcon(path);
         label.setIcon(imageIcon);
         label.revalidate();
         label.repaint();
-        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum-1) + ".dot");
-        globalGraphNum++;
     }
 
-    private void restartComboBox(JComboBox comboBox) {
+    public void restartComboBox(JComboBox comboBox) {
         DefaultComboBoxModel model = (DefaultComboBoxModel) comboBox.getModel();
         model.removeAllElements();
         comboBox.updateUI();
     }
 
-    private void setAction(BTreePage<NodeGraph<LocationInfo>> page, JComboBox comboBox) {
+    public void setAction(BTreePage<NodeGraph<LocationInfo>> page, JComboBox comboBox) {
         if (page != null && !page.isEmpty()) {
 
             if (page.getPunteros().isEmpty()) {
@@ -151,36 +172,77 @@ public class Backend {
     }
 
     //----------------------------BUSQUEDA DE NODOS----------------------------
-    public void findPaths(JComboBox[] specifications){
-        if(specifications[MainMenu.FROM_NODE].getSelectedItem().toString()
-                .equals((String)specifications[MainMenu.TO_NODE].getSelectedItem())){
+    public void findPaths(JComboBox[] specifications) {
+        if (specifications[MainMenu.FROM_NODE].getSelectedItem().toString()
+                .equals((String) specifications[MainMenu.TO_NODE].getSelectedItem())) {
             JOptionPane.showMessageDialog(null, "El nodo seleccionado es el mismo");
-        }else {
+        } else {
             try {
                 boolean extendedPath = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE;
-                System.out.println(specifications[MainMenu.TYPE_TRANS].getSelectedIndex());
-                System.out.println(extendedPath);
-                BTree<Recorrido> recorridos = searchearPath.findPath(
+                BTree<Recorrido> recorridos = searchearPath.findAllPaths(
                         grafo,
                         new LocationInfo((String) specifications[MainMenu.FROM_NODE].getSelectedItem()),
-                        new LocationInfo((String) specifications[MainMenu.TO_NODE].getSelectedItem()), 
+                        new LocationInfo((String) specifications[MainMenu.TO_NODE].getSelectedItem()),
                         extendedPath
                 );
                 bTreeGrapher.graph(FilesUtil.RESOURCES_PATH, "arbol_recorridos", recorridos);
+                JOptionPane.showMessageDialog(null, "Se ha generado el archivo " + FilesUtil.RESOURCES_PATH
+                        + "arbol_recorridos.png como referencia del arbol B de todos los recorridos posibles");
+                //inicializar el recorrido
+                fronted.setVisible(false);
+                GuidedTravel travel = new GuidedTravel(this, specifications, recorridos);
+                travel.initClock(clock);
+                travel.setVisible(true);
             } catch (NoDataFoundException | IOException ex) {
                 showInesperatedError();
             }
         }
     }
     
-    
+    /**
+     * Inicializa el mejor camino referente a un conjunto de condiciones, utiliza el grafo actual
+     * que se encuentra en el backend
+     * @param recorridos, son todos los recorridos que fueron previamente encontrados
+     * @param displayGraph, una label para mostrar la imagen generada del camino
+     * @param specifications, especificaciones de filtros
+     * @return el recorrido mas optimo encontrado
+     * @throws compi1.travelmapgt.exceptions.NoPathException cuando no hay caminos disponibles
+     * @throws java.io.IOException cuando no se pueda generar la imagen
+     */
+    public Recorrido initDefinePath(BTree<Recorrido> recorridos, JLabel displayGraph, JComboBox[] specifications) 
+            throws NoPathException, IOException{
+        FilterSpecifications filters = new FilterSpecifications(
+                specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE, 
+                specifications[MainMenu.FILTER].getSelectedIndex(), 
+                specifications[MainMenu.BEST_SPECIFICATION].getSelectedIndex() == MainMenu.BEST_ROUTE
+        );
+        Recorrido recorrido = searchearPath.findPath(grafo, recorridos, filters, clock);
+        recorrido.showInGraph();
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH +"recorrido" + recorridoNum + ".png");
+        recorridoNum ++;
+        grafoGrapher.graph(FilesUtil.RESOURCES_PATH,"recorrido" + recorridoNum, grafo);
+        initGraphImage(displayGraph, FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
+        return recorrido;
+    }
+
     //----------------------------CERRAR/REINICIAR EL PROGRAMA----------------------------
-    
-    public void restartIde(JComboBox from, JComboBox to, JLabel label){
+    public void restartIde(JComboBox from, JComboBox to, JLabel label) {
         restartComboBox(from);
         restartComboBox(to);
         label.setIcon(null);
         label.revalidate();
         label.repaint();
+    }
+    
+    public void endPath(Recorrido currentRecorrido, JFrame frame){
+        if(currentRecorrido != null){
+            currentRecorrido.hiddeInGraph();
+        }
+        frame.dispose();
+        fronted.setVisible(true);
+    }
+    
+    public void showFronted(){
+        fronted.setVisible(true);
     }
 }

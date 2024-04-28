@@ -1,6 +1,7 @@
 
 package compi1.travelmapgt.models;
 
+import java.time.LocalTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class PathInfo {
     private int costGas;
     private int costWalking;
     private int distance;
-    private int hourInitTrafic;
-    private int hourFinishTrafic;
+    private LocalTime hourInitTrafic;
+    private LocalTime hourFinishTrafic;
     private int probabilityTrafic;
 }

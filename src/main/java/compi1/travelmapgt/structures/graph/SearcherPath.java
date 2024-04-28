@@ -1,10 +1,14 @@
 package compi1.travelmapgt.structures.graph;
 
 import compi1.travelmapgt.exceptions.NoDataFoundException;
+import compi1.travelmapgt.exceptions.NoPathException;
+import compi1.travelmapgt.models.FilterSpecifications;
 import compi1.travelmapgt.models.LocationInfo;
 import compi1.travelmapgt.models.PathInfo;
 import compi1.travelmapgt.models.Recorrido;
 import compi1.travelmapgt.structures.btree.BTree;
+import compi1.travelmapgt.structures.btree.BTreePage;
+import compi1.travelmapgt.util.Clock;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +18,7 @@ import java.util.List;
  */
 public class SearcherPath {
 
-    public BTree<Recorrido> findPath(Grafo<LocationInfo, PathInfo> graph, LocationInfo start,
+    public BTree<Recorrido> findAllPaths(Grafo<LocationInfo, PathInfo> graph, LocationInfo start,
             LocationInfo finish, boolean extendedPath)
             throws NoDataFoundException {
         BTree<Recorrido> recorridos = new BTree<>(5);
@@ -29,10 +33,10 @@ public class SearcherPath {
                     recorridos
             );
         } else {
-            saveExtendedPath(graph, 
-                    startNode, 
-                    nodesAlreadyPass, 
-                    graph.getNodeGraph(finish), 
+            saveExtendedPath(graph,
+                    startNode,
+                    nodesAlreadyPass,
+                    graph.getNodeGraph(finish),
                     recorridos
             );
         }
@@ -58,7 +62,7 @@ public class SearcherPath {
             }
         }
     }
-    
+
     private void saveExtendedPath(Grafo<LocationInfo, PathInfo> grafo, NodeNum<LocationInfo> currentNode,
             List<Integer> nodesAlreadyPass, NodeGraph<LocationInfo> destinity, BTree<Recorrido> recorridos)
             throws NoDataFoundException {
@@ -89,6 +93,41 @@ public class SearcherPath {
             }
         }
         return false;
+    }
+
+    public Recorrido findPath(Grafo<LocationInfo, PathInfo> grafo, BTree<Recorrido> recorridos,
+            FilterSpecifications filters, Clock clock) throws NoPathException {
+        if (recorridos.isEmpty() || grafo.isEmpty()) {
+            throw new NoPathException();
+        }
+        Recorrido recorrido = null;
+        recorrido = evaluateWeight(recorridos.getRaiz(), recorrido, filters, clock);
+        return recorrido;
+    }
+
+
+    private Recorrido evaluateWeight(BTreePage<Recorrido> page, Recorrido returnedPath, FilterSpecifications filters, 
+            Clock clock) throws NoPathException {
+        if (page != null && !page.isEmpty()) {
+            
+            for (Recorrido recorrido : page.getNodes()) { //encuentra los pesos de los nodos
+                recorrido.findWeight(filters, clock);
+                
+                if(returnedPath ==  null){
+                    returnedPath = recorrido;
+                } else if(recorrido.getWeight() > returnedPath.getWeight() && !filters.isBestPath()){
+                    returnedPath = recorrido;
+                } else if(recorrido.getWeight() < returnedPath.getWeight() && filters.isBestPath()){
+                    returnedPath = recorrido;
+                }
+            }
+            
+            for (int i = 0; i < page.getPunteros().size(); i++) { //evalua los punteros
+                BTreePage<Recorrido> subPage = (BTreePage) page.getPunteros().get(i);
+                returnedPath = evaluateWeight(subPage, returnedPath, filters, clock);
+            }
+        }
+        return returnedPath;
     }
 
 }

@@ -10,15 +10,26 @@ import javax.swing.JOptionPane;
 public class MainMenu extends javax.swing.JFrame {
 
     private Backend backend;
-
+    
+    
+    /**
+     * numero de especificacion en el array specications
+     */
     protected final static int FROM_NODE = 0, TO_NODE = 1,
-            TYPE_TRANS = 2, FILTER = 3, BEST_SPECIFICATION = 4;
+            TYPE_TRANS = 2, FILTER = 3, BEST_SPECIFICATION = 4, DISPLAY_SPECIFICATION = 5;
 
     protected final static int VEHICLE_TYPE = 0;
 
     protected final static int BEST_ROUTE = 0;
+    
+    protected final static int SHOW_WEIGHT_OP= 0;
+    
+    /**
+     * Especificacion deL filtro para buscar el camino
+     */
     public final static int RESOURCES_FILTER = 0, DISTANCE_FILTER = 1, RESOURCES_DISTANCE_FILTER = 2,
             ALL_FILTER = 3;
+    
 
     private JComboBox[] specifications;
 
@@ -34,12 +45,13 @@ public class MainMenu extends javax.swing.JFrame {
     }
 
     private void initComboBox() {
-        specifications = new JComboBox[5];
+        specifications = new JComboBox[6];
         specifications[FROM_NODE] = fromNodeCB;
         specifications[TO_NODE] = toNodeCB;
         specifications[TYPE_TRANS] = transpCB;
         specifications[FILTER] = filterCB;
         specifications[BEST_SPECIFICATION] = typeRuteCB;
+        specifications[DISPLAY_SPECIFICATION] = displayCB;
     }
 
     /**
@@ -66,6 +78,9 @@ public class MainMenu extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         jLabel7 = new javax.swing.JLabel();
         typeRuteCB = new javax.swing.JComboBox<>();
+        jLabel8 = new javax.swing.JLabel();
+        displayCB = new javax.swing.JComboBox<>();
+        jSeparator2 = new javax.swing.JSeparator();
         displayGraph = new javax.swing.JPanel();
         grafoDisplay = new javax.swing.JLabel();
         menu = new javax.swing.JMenuBar();
@@ -116,6 +131,8 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(228, 228, 228));
         jLabel6.setText("Filtros:");
 
+        bStart.setBackground(new java.awt.Color(4, 155, 155));
+        bStart.setForeground(new java.awt.Color(0, 0, 0));
         bStart.setText("Iniciar");
         bStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -129,6 +146,12 @@ public class MainMenu extends javax.swing.JFrame {
 
         typeRuteCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "La mejor", "La peor" }));
 
+        jLabel8.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel8.setText("Display:");
+
+        displayCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mostrar pesos", "No mostrar" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -141,7 +164,8 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(bStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -150,9 +174,15 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(transpCB, 0, 240, Short.MAX_VALUE)
                     .addComponent(filterCB, 0, 1, Short.MAX_VALUE)
                     .addComponent(fromNodeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(typeRuteCB, 0, 1, Short.MAX_VALUE))
+                    .addComponent(typeRuteCB, 0, 1, Short.MAX_VALUE)
+                    .addComponent(displayCB, 0, 1, Short.MAX_VALUE))
                 .addContainerGap(16, Short.MAX_VALUE))
             .addComponent(jSeparator1)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jSeparator2)
+                    .addContainerGap()))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,9 +191,7 @@ public class MainMenu extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(hourDisplay))
-                .addGap(26, 26, 26)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(71, 71, 71)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fromNodeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
@@ -183,9 +211,20 @@ public class MainMenu extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(typeRuteCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
-                .addGap(73, 73, 73)
+                .addGap(33, 33, 33)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(displayCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addGap(33, 33, 33)
                 .addComponent(bStart)
-                .addContainerGap(283, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(82, 82, 82)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(616, Short.MAX_VALUE)))
         );
 
         displayGraph.setBackground(new java.awt.Color(2, 41, 58));
@@ -197,15 +236,15 @@ public class MainMenu extends javax.swing.JFrame {
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(displayGraphLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
                 .addContainerGap())
         );
         displayGraphLayout.setVerticalGroup(
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(displayGraphLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(grafoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 791, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         dataMenu.setText("Datos");
@@ -386,6 +425,7 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem continueClock;
     private javax.swing.JMenuItem creditsOp;
     private javax.swing.JMenu dataMenu;
+    private javax.swing.JComboBox<String> displayCB;
     private javax.swing.JPanel displayGraph;
     private javax.swing.JMenuItem exampleDataOp;
     private javax.swing.JComboBox<String> filterCB;
@@ -399,8 +439,10 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem pauseClockOp;
     private javax.swing.JMenuItem resetHourOp;

@@ -21,18 +21,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Recorrido implements Comparable<Recorrido> {
-    
+
     private List<Integer> recorrido;
     private int code;
     private Grafo<LocationInfo, PathInfo> graph;
     private float weight;
-    
+
     public Recorrido(List<Integer> recorrido, int code, Grafo<LocationInfo, PathInfo> graph) {
         this.recorrido = recorrido;
         this.code = code;
         this.graph = graph;
     }
-    
+
     public void findWeight(FilterSpecifications filters, Clock clock) throws NoPathException {
         if (filters.isExtendedPath()) {
             findWeightInExtendedPath(filters);
@@ -40,7 +40,7 @@ public class Recorrido implements Comparable<Recorrido> {
             findWeighInDirigitePath(filters, clock);
         }
     }
-    
+
     private void findWeightInExtendedPath(FilterSpecifications filters) throws NoPathException {
         if (this.graph.isEmpty() || recorrido.isEmpty()) {
             throw new NoPathException();
@@ -50,34 +50,31 @@ public class Recorrido implements Comparable<Recorrido> {
                 PathInfo pathInfo;
                 try {
                     pathInfo = graph.getPath(recorrido.get(i), recorrido.get(i + 1));
-                } catch (IndexOutOfBoundsException e) {
-                    try {
+                    if (pathInfo == null) {
                         pathInfo = graph.getPath(recorrido.get(i + 1), recorrido.get(i));
-                    } catch (IndexOutOfBoundsException ex) {
+                    }
+                    if (pathInfo == null) {
                         throw new NoPathException();
                     }
+                } catch (IndexOutOfBoundsException e) {
+                    throw new NoPathException();
                 }
-                //ARREGLAR AQUI, NO QUIERO NULLS
                 switch (filters.getTypeFilter()) {
-                    case MainMenu.RESOURCES_FILTER:
+                    case MainMenu.RESOURCES_FILTER ->
                         this.weight += pathInfo.getCostWalking();
-                        break;
-                    case MainMenu.DISTANCE_FILTER:
+                    case MainMenu.DISTANCE_FILTER ->
                         this.weight += pathInfo.getDistance();
-                        break;
-                    case MainMenu.RESOURCES_DISTANCE_FILTER:
-                        this.weight += pathInfo.getCostWalking() + pathInfo.getDistance();
-                        break;
-                    case MainMenu.ALL_FILTER:
+                    case MainMenu.RESOURCES_DISTANCE_FILTER ->
+                        this.weight += pathInfo.getDistance() / pathInfo.getCostWalking();
+                    case MainMenu.ALL_FILTER ->
                         this.weight += pathInfo.getDistance() / pathInfo.getAverageTimeWalking();
-                        break;
-                    default:
+                    default ->
                         throw new AssertionError();
                 }
             }
         }
     }
-    
+
     private void findWeighInDirigitePath(FilterSpecifications filters, Clock clock) throws NoPathException {
         if (this.graph.isEmpty() || recorrido.isEmpty()) {
             throw new NoPathException();
@@ -87,38 +84,35 @@ public class Recorrido implements Comparable<Recorrido> {
             if (i != this.recorrido.size() - 1) { //diferente al penultimo
                 PathInfo pathInfo = graph.getPath(recorrido.get(i), recorrido.get(i + 1));
                 switch (filters.getTypeFilter()) {
-                    case MainMenu.RESOURCES_FILTER:
+                    case MainMenu.RESOURCES_FILTER ->
                         this.weight += pathInfo.getCostGas();
-                        break;
-                    case MainMenu.DISTANCE_FILTER:
+                    case MainMenu.DISTANCE_FILTER ->
                         this.weight += pathInfo.getDistance();
-                        break;
-                    case MainMenu.RESOURCES_DISTANCE_FILTER:
-                        this.weight += pathInfo.getCostGas() + pathInfo.getDistance();
-                        break;
-                    case MainMenu.ALL_FILTER:
+                    case MainMenu.RESOURCES_DISTANCE_FILTER ->
+                        this.weight += pathInfo.getDistance() / pathInfo.getCostGas();
+                    case MainMenu.ALL_FILTER -> {
                         int traficProbability = clock.calculateTraficProbability(currentTime, pathInfo);
                         this.weight += pathInfo.getDistance() / (pathInfo.getAverageTimeCar() * (1 + traficProbability));
-                        if(clock.isActive()){
+                        if (clock.isActive()) {
                             currentTime = currentTime.plusMinutes(pathInfo.getAverageTimeCar());
                         }
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new AssertionError();
                 }
             }
         }
     }
-    
-    public void showInGraph(){
+
+    public void showInGraph() {
         modifyRecorrido(true);
     }
-    
-    public void hiddeInGraph(){
+
+    public void hiddeInGraph() {
         modifyRecorrido(false);
     }
-    
-    private void modifyRecorrido(boolean active){
+
+    private void modifyRecorrido(boolean active) {
         if (!recorrido.isEmpty()) {
             for (Integer actual : recorrido) {
                 try {
@@ -129,12 +123,12 @@ public class Recorrido implements Comparable<Recorrido> {
             }
         }
     }
-    
+
     @Override
     public int compareTo(Recorrido t) {
         return Integer.compare(this.code, t.code);
     }
-    
+
     @Override
     public String toString() {
         String label = "";

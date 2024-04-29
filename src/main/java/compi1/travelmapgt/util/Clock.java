@@ -46,6 +46,9 @@ public class Clock implements Runnable{
     }
     
     public int calculateTraficProbability(LocalTime currentTime, PathInfo pathInfo){
+        if(pathInfo.getHourInitTrafic() == null || pathInfo.getHourFinishTrafic() == null){
+            return 0;
+        }
         if (currentTime.isAfter(pathInfo.getHourInitTrafic()) //dentro del rango
                 && currentTime.isBefore(pathInfo.getHourFinishTrafic())) {
             return pathInfo.getProbabilityTrafic();

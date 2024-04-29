@@ -75,12 +75,12 @@ public class Grafo<K extends Comparable<K>, W> {
         return nodesByNumber.find(new NodeNum<>(code)).getKey();
     }
     
-    protected NodeNum<K> getNodeNum(int code) throws NoDataFoundException{
+    public NodeNum<K> getNodeNum(int code) throws NoDataFoundException{
         NodeNum<K> nodeNum = new NodeNum<>(code);
         return nodesByNumber.find(nodeNum);
     }
     
-    protected NodeGraph<K> getNodeGraph(K key) throws NoDataFoundException{
+    public NodeGraph<K> getNodeGraph(K key) throws NoDataFoundException{
         NodeGraph<K> nodeGraph = new NodeGraph<>(key);
         return nodes.find(nodeGraph);
     }

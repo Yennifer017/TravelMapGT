@@ -6,7 +6,6 @@ import compi1.travelmapgt.structures.btree.BTree;
 import compi1.travelmapgt.util.Clock;
 import java.io.IOException;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,41 +14,43 @@ import javax.swing.JOptionPane;
 public class GuidedTravel extends javax.swing.JFrame {
 
     private Backend backend;
-    
+
     private JComboBox[] specifications;
     private BTree<Recorrido> recorridos;
     private Recorrido currentRecorrido;
+    private int currentNode;
 
     /**
      * Creates new form MainMenu
+     *
      * @param backend
      * @param recorridos
      * @param specifications
+     * @throws compi1.travelmapgt.exceptions.NoPathException
+     * @throws java.io.IOException
      */
-    public GuidedTravel(Backend backend, JComboBox[] specifications, BTree<Recorrido> recorridos) {
+    public GuidedTravel(Backend backend, JComboBox[] specifications, BTree<Recorrido> recorridos)
+            throws NoPathException, IOException {
         initComponents();
         this.setLocationRelativeTo(null);
         initDetails(specifications);
         this.backend = backend;
         this.recorridos = recorridos;
-        try {
-            currentRecorrido = backend.initDefinePath(recorridos, grafoDisplay, specifications);
-        } catch (NoPathException | IOException ex) {
-            JOptionPane.showMessageDialog(null, "Ocurrio un error inesperado");
-            this.dispose();
-            backend.showFronted();
-        } 
+        currentRecorrido = backend.initDefinePath(recorridos, grafoDisplay, specifications);
+        displayRoute.setText(currentRecorrido.toString());
+        currentNode = 0;
+        backend.initOptionsRecorrido(moveToCB, recorridos, currentNode + 1);
     }
-    
-    private void initDetails(JComboBox[] specifications){
+
+    private void initDetails(JComboBox[] specifications) {
         destinityDisp.setText(specifications[MainMenu.TO_NODE].getSelectedItem().toString());
         typeTransDisp.setText(specifications[MainMenu.TYPE_TRANS].getSelectedItem().toString());
-        
+
         String[] filter = specifications[MainMenu.FILTER].getSelectedItem().toString().split("/");
         String filterName;
-        if(filter.length == 2){
-            filterName = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() == MainMenu.VEHICLE_TYPE ?
-                    filter[0] : filter[1];
+        if (filter.length == 2) {
+            filterName = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() == MainMenu.VEHICLE_TYPE
+                    ? filter[0] : filter[1];
         } else {
             filterName = filter[0];
         }
@@ -57,13 +58,10 @@ public class GuidedTravel extends javax.swing.JFrame {
         typeRouteDisp.setText(specifications[MainMenu.BEST_SPECIFICATION].getSelectedItem().toString());
         currentNodeDisp.setText(specifications[MainMenu.FROM_NODE].getSelectedItem().toString());
     }
-    
-    protected void initClock(Clock clock){
+
+    protected void initClock(Clock clock) {
         clock.setDisplayTime(hourDisplay);
     }
-    
-
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -81,11 +79,11 @@ public class GuidedTravel extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        bStart = new javax.swing.JButton();
+        continueRoute = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel7 = new javax.swing.JLabel();
-        typeRuteCB = new javax.swing.JComboBox<>();
-        bStart1 = new javax.swing.JButton();
+        moveToCB = new javax.swing.JComboBox<>();
+        stop = new javax.swing.JButton();
         destinityDisp = new javax.swing.JLabel();
         typeTransDisp = new javax.swing.JLabel();
         filterDisp = new javax.swing.JLabel();
@@ -94,6 +92,9 @@ public class GuidedTravel extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         currentNodeDisp = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        scroll = new javax.swing.JScrollPane();
+        displayRoute = new javax.swing.JTextPane();
         displayGraph = new javax.swing.JPanel();
         grafoDisplay = new javax.swing.JLabel();
 
@@ -126,12 +127,12 @@ public class GuidedTravel extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(228, 228, 228));
         jLabel6.setText("Ruta:");
 
-        bStart.setBackground(new java.awt.Color(0, 153, 0));
-        bStart.setForeground(new java.awt.Color(255, 255, 255));
-        bStart.setText("Continuar Recorrido");
-        bStart.addActionListener(new java.awt.event.ActionListener() {
+        continueRoute.setBackground(new java.awt.Color(0, 153, 0));
+        continueRoute.setForeground(new java.awt.Color(255, 255, 255));
+        continueRoute.setText("Continuar Recorrido");
+        continueRoute.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bStartActionPerformed(evt);
+                continueRouteActionPerformed(evt);
             }
         });
 
@@ -139,14 +140,14 @@ public class GuidedTravel extends javax.swing.JFrame {
         jLabel7.setForeground(new java.awt.Color(228, 228, 228));
         jLabel7.setText("Moverse:");
 
-        typeRuteCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "La mejor", "La peor" }));
+        moveToCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "La mejor", "La peor" }));
 
-        bStart1.setBackground(new java.awt.Color(204, 0, 0));
-        bStart1.setForeground(new java.awt.Color(255, 255, 255));
-        bStart1.setText("Parar recorrido");
-        bStart1.addActionListener(new java.awt.event.ActionListener() {
+        stop.setBackground(new java.awt.Color(204, 0, 0));
+        stop.setForeground(new java.awt.Color(255, 255, 255));
+        stop.setText("Parar recorrido");
+        stop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bStart1ActionPerformed(evt);
+                stopActionPerformed(evt);
             }
         });
 
@@ -174,9 +175,20 @@ public class GuidedTravel extends javax.swing.JFrame {
         currentNodeDisp.setForeground(new java.awt.Color(228, 228, 228));
         currentNodeDisp.setText("CurrentNode");
 
-        jLabel2.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(228, 228, 228));
         jLabel2.setText("SIGUIENDO UN RECORRIDO");
+
+        jLabel13.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel13.setText("Ruta:");
+
+        displayRoute.setBackground(new java.awt.Color(0, 59, 98));
+        displayRoute.setBorder(null);
+        displayRoute.setFont(new java.awt.Font("Cantarell", 0, 20)); // NOI18N
+        displayRoute.setForeground(new java.awt.Color(255, 255, 255));
+        displayRoute.setText("Display the best route");
+        scroll.setViewportView(displayRoute);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -190,11 +202,15 @@ public class GuidedTravel extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(typeRuteCB, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(currentNodeDisp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(moveToCB, 0, 240, Short.MAX_VALUE)
+                                    .addComponent(currentNodeDisp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
                                 .addGap(22, 22, 22))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -207,8 +223,8 @@ public class GuidedTravel extends javax.swing.JFrame {
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(bStart, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-                                            .addComponent(bStart1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(continueRoute, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                                            .addComponent(stop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(destinityDisp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(typeTransDisp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(filterDisp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -257,15 +273,19 @@ public class GuidedTravel extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
                     .addComponent(currentNodeDisp))
-                .addGap(40, 40, 40)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel13)
+                    .addComponent(scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(typeRuteCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(moveToCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addGap(52, 52, 52)
-                .addComponent(bStart)
+                .addComponent(continueRoute)
                 .addGap(18, 18, 18)
-                .addComponent(bStart1)
-                .addContainerGap(117, Short.MAX_VALUE))
+                .addComponent(stop)
+                .addContainerGap(188, Short.MAX_VALUE))
         );
 
         displayGraph.setBackground(new java.awt.Color(2, 41, 58));
@@ -277,8 +297,7 @@ public class GuidedTravel extends javax.swing.JFrame {
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(displayGraphLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(grafoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 670, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(grafoDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE))
         );
         displayGraphLayout.setVerticalGroup(
             displayGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -306,26 +325,27 @@ public class GuidedTravel extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void bStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStartActionPerformed
-        
-    }//GEN-LAST:event_bStartActionPerformed
+    private void continueRouteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueRouteActionPerformed
+        //continue the travel
+    }//GEN-LAST:event_continueRouteActionPerformed
 
-    private void bStart1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStart1ActionPerformed
+    private void stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopActionPerformed
         backend.endPath(currentRecorrido, this);
-    }//GEN-LAST:event_bStart1ActionPerformed
+    }//GEN-LAST:event_stopActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bStart;
-    private javax.swing.JButton bStart1;
+    private javax.swing.JButton continueRoute;
     private javax.swing.JLabel currentNodeDisp;
     private javax.swing.JLabel destinityDisp;
     private javax.swing.JPanel displayGraph;
+    private javax.swing.JTextPane displayRoute;
     private javax.swing.JLabel filterDisp;
     private javax.swing.JLabel grafoDisplay;
     private javax.swing.JLabel hourDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -335,8 +355,10 @@ public class GuidedTravel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JComboBox<String> moveToCB;
+    private javax.swing.JScrollPane scroll;
+    private javax.swing.JButton stop;
     private javax.swing.JLabel typeRouteDisp;
-    private javax.swing.JComboBox<String> typeRuteCB;
     private javax.swing.JLabel typeTransDisp;
     // End of variables declaration//GEN-END:variables
 }

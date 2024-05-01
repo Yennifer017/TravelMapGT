@@ -1,11 +1,14 @@
 package compi1.travelmapgt;
 
+import compi1.travelmapgt.exceptions.NoDataFoundException;
 import compi1.travelmapgt.exceptions.NoPathException;
+import compi1.travelmapgt.models.KeyMove;
 import compi1.travelmapgt.models.Recorrido;
 import compi1.travelmapgt.structures.btree.BTree;
 import compi1.travelmapgt.util.Clock;
 import java.io.IOException;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -36,10 +39,11 @@ public class GuidedTravel extends javax.swing.JFrame {
         initDetails(specifications);
         this.backend = backend;
         this.recorridos = recorridos;
+        this.specifications = specifications;
         currentRecorrido = backend.initDefinePath(recorridos, grafoDisplay, specifications);
         displayRoute.setText(currentRecorrido.toString());
         currentNode = 0;
-        backend.initOptionsRecorrido(moveToCB, recorridos, currentNode + 1);
+        backend.initOptionsRecorrido(moveToCB, recorridos, currentNode, -1);
     }
 
     private void initDetails(JComboBox[] specifications) {
@@ -183,6 +187,7 @@ public class GuidedTravel extends javax.swing.JFrame {
         jLabel13.setForeground(new java.awt.Color(228, 228, 228));
         jLabel13.setText("Ruta:");
 
+        displayRoute.setEditable(false);
         displayRoute.setBackground(new java.awt.Color(0, 59, 98));
         displayRoute.setBorder(null);
         displayRoute.setFont(new java.awt.Font("Cantarell", 0, 20)); // NOI18N
@@ -326,7 +331,49 @@ public class GuidedTravel extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void continueRouteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continueRouteActionPerformed
-        //continue the travel
+        int numberNodeTo = ((KeyMove) moveToCB.getSelectedItem()).getKeyNumber();
+        if (numberNodeTo == currentRecorrido.getRecorrido().get(currentNode + 1)) { //si va por el camino adecuado
+            currentNode++; //nos movemos
+            if (currentNode == currentRecorrido.getRecorrido().size() - 1) { //llego al final
+                System.out.println("Ha llegado al destino");
+                JOptionPane.showMessageDialog(null, "Has llegado a tu destino :D");
+                this.dispose();
+                backend.showFronted();
+            } else { //aun no es el final
+                try {
+                    currentRecorrido.getGraph().getNode(currentRecorrido.getRecorrido().get(currentNode - 1))
+                            .setActive(false);
+                    currentNodeDisp.setText(currentRecorrido.getGraph().getNode(currentRecorrido.getRecorrido().get(currentNode)).getKeyLocation());
+
+                    backend.initOptionsRecorrido(moveToCB, recorridos, currentNode, currentRecorrido.getRecorrido().get(currentNode));
+
+                    backend.updateRecorrido(grafoDisplay, specifications);
+                } catch (NoDataFoundException ex) {
+                    System.out.println("No deberia ocurrir nunca, desde guidedTravel");
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Ocurrio un error inesperado no se pudo graficar el grafo");
+                }
+            }
+        } else { //si hay que recalcular la ruta
+            currentRecorrido.hiddeInGraph();
+            try {
+                this.recorridos = backend.generateRecorridos(
+                        specifications,
+                        ((KeyMove) moveToCB.getSelectedItem()).getKeyString()
+                );
+                currentNodeDisp.setText(((KeyMove) moveToCB.getSelectedItem()).getKeyString());
+                currentRecorrido = backend.initDefinePath(recorridos, grafoDisplay, specifications);
+                displayRoute.setText(currentRecorrido.toString());
+                
+                backend.initOptionsRecorrido(moveToCB, recorridos, currentNode, -1);
+            } catch (NoDataFoundException ex) {
+                //no deberia pasar
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Error inesperado, no se pudo cargar la imagen correctamente.");
+            } catch (NoPathException ex) {
+                JOptionPane.showMessageDialog(null, "No se pudo encontrar un camino hacia el nodo especificado.");
+            }
+        }
     }//GEN-LAST:event_continueRouteActionPerformed
 
     private void stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopActionPerformed

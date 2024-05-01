@@ -61,6 +61,9 @@ public class Backend {
     }
 
     //----------------------------DATOS DE HORA----------------------------
+    /**
+     * Permite definir la hora del reloj con las verificaciones necesarias
+     */
     public void defineHour() {
         String hour = JOptionPane.showInputDialog(null, "Ingrese la hora (HH:MM):");
         if (hour != null && hour.matches("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
@@ -72,16 +75,27 @@ public class Backend {
         }
     }
 
+    /**
+     * Inicializa el reloj, lo construye
+     *
+     * @param hourDisplay para mostrar la hora
+     */
     public void initClock(JLabel hourDisplay) {
         clock = new Clock(hourDisplay);
         threadClock = new Thread(clock);
         threadClock.start();
     }
 
+    /**
+     * @return el reloj actual
+     */
     public Clock getClock() {
         return this.clock;
     }
 
+    /**
+     * Hace que el reloj vuelva a correr
+     */
     public void resumeCountHour() {
         clock.restart();
         threadClock.interrupt();
@@ -183,7 +197,7 @@ public class Backend {
         } else {
             try {
                 boolean extendedPath = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE;
-                BTree<Recorrido> recorridos = searchearPath.findAllPaths(
+                /*BTree<Recorrido> recorridos = searchearPath.findAllPaths(
                         grafo,
                         new LocationInfo((String) specifications[MainMenu.FROM_NODE].getSelectedItem()),
                         new LocationInfo((String) specifications[MainMenu.TO_NODE].getSelectedItem()),
@@ -191,7 +205,8 @@ public class Backend {
                 );
                 bTreeGrapher.graph(FilesUtil.RESOURCES_PATH, "arbol_recorridos", recorridos);
                 JOptionPane.showMessageDialog(null, "Se ha generado el archivo " + FilesUtil.RESOURCES_PATH
-                        + "arbol_recorridos.png como referencia del arbol B de todos los recorridos posibles");
+                        + "arbol_recorridos.png como referencia del arbol B de todos los recorridos posibles");*/
+                BTree<Recorrido> recorridos = generateRecorridos(specifications, (String) specifications[MainMenu.FROM_NODE].getSelectedItem());
                 //inicializar el recorrido
                 fronted.setVisible(false);
                 GuidedTravel travel;
@@ -206,6 +221,20 @@ public class Backend {
                 showInesperatedError();
             }
         }
+    }
+
+    public BTree<Recorrido> generateRecorridos(JComboBox[] specifications, String fromNodeName) throws NoDataFoundException, IOException {
+        boolean extendedPath = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE;
+        BTree<Recorrido> recorridos = searchearPath.findAllPaths(
+                grafo,
+                new LocationInfo(fromNodeName),
+                new LocationInfo((String) specifications[MainMenu.TO_NODE].getSelectedItem()),
+                extendedPath
+        );
+        bTreeGrapher.graph(FilesUtil.RESOURCES_PATH, "arbol_recorridos", recorridos);
+        JOptionPane.showMessageDialog(null, "Se ha generado el archivo " + FilesUtil.RESOURCES_PATH
+                + "arbol_recorridos.png como referencia del arbol B de todos los recorridos posibles");
+        return recorridos;
     }
 
     /**
@@ -228,16 +257,9 @@ public class Backend {
                 specifications[MainMenu.FILTER].getSelectedIndex(),
                 specifications[MainMenu.BEST_SPECIFICATION].getSelectedIndex() == MainMenu.BEST_ROUTE
         );
-        Recorrido recorrido = searchearPath.findPath(grafo, recorridos, filters, clock);
+        Recorrido recorrido = searchearPath.findPath(recorridos, filters, clock);
         recorrido.showInGraph();
-        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
-        recorridoNum++;
-        if (specifications[MainMenu.DISPLAY_SPECIFICATION].getSelectedIndex() == MainMenu.SHOW_WEIGHT_OP) {
-            grafoGrapher.graphWithWeight(FilesUtil.RESOURCES_PATH, "recorrido" + recorridoNum, grafo, getTypeWeight(filters));
-        } else {
-            grafoGrapher.graph(FilesUtil.RESOURCES_PATH, "recorrido" + recorridoNum, grafo);
-        }
-        initGraphImage(displayGraph, FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
+        updateRecorrido(displayGraph, specifications);
         return recorrido;
     }
 
@@ -271,6 +293,29 @@ public class Backend {
         }
     }
 
+    /**
+     * grafica el grafo actual, los cambios en recorridos se deben realizar
+     * externamente.
+     *
+     * @param displayGraph
+     * @param specifications
+     */
+    public void updateRecorrido(JLabel displayGraph, JComboBox[] specifications) throws IOException {
+        FilterSpecifications filters = new FilterSpecifications(
+                specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE,
+                specifications[MainMenu.FILTER].getSelectedIndex(),
+                specifications[MainMenu.BEST_SPECIFICATION].getSelectedIndex() == MainMenu.BEST_ROUTE
+        );
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
+        recorridoNum++;
+        if (specifications[MainMenu.DISPLAY_SPECIFICATION].getSelectedIndex() == MainMenu.SHOW_WEIGHT_OP) {
+            grafoGrapher.graphWithWeight(FilesUtil.RESOURCES_PATH, "recorrido" + recorridoNum, grafo, getTypeWeight(filters));
+        } else {
+            grafoGrapher.graph(FilesUtil.RESOURCES_PATH, "recorrido" + recorridoNum, grafo);
+        }
+        initGraphImage(displayGraph, FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
+    }
+
     //----------------------------CERRAR/REINICIAR EL PROGRAMA----------------------------
     public void restartIde(JComboBox from, JComboBox to, JLabel label) {
         restartComboBox(from);
@@ -293,20 +338,28 @@ public class Backend {
     }
 
     //----------------------------INICIALIZAR RECORRIDOS----------------------------
-    public void initOptionsRecorrido(JComboBox moveToCM, BTree<Recorrido> recorridos, int nodeNum) {
+    /**
+     * Inicia las opciones de recorrido
+     *
+     * @param moveToCM el combo box para especificar el siguiente recorrido
+     * @param recorridos los recorridos guardados
+     * @param currentNodeNum
+     * @param codeCurrentNode
+     */
+    public void initOptionsRecorrido(JComboBox moveToCM, BTree<Recorrido> recorridos, int currentNodeNum, int codeCurrentNode) {
         restartComboBox(moveToCM);
-        setViableNode(recorridos.getRaiz(), moveToCM, nodeNum, new ArrayList<>());
+        setViableNode(recorridos.getRaiz(), moveToCM, currentNodeNum, new ArrayList<>(), codeCurrentNode);
     }
 
-    private void setViableNode(BTreePage<Recorrido> page, JComboBox comboBox, int nodeNum, 
-            List<Integer> nodesKeyList) {
+    private void setViableNode(BTreePage<Recorrido> page, JComboBox comboBox, int currentMove,
+            List<Integer> nodesKeyList, int nodeFromCode) { //recorre el arbol
         if (page != null && !page.isEmpty()) {
             if (page.getPunteros().isEmpty()) {
                 for (Recorrido node : page.getNodes()) { //agrega sus nodos
                     try {
-                        addNode(node, nodeNum, comboBox, nodesKeyList);
+                        addNode(node, currentMove, comboBox, nodesKeyList, nodeFromCode);
                     } catch (IndexOutOfBoundsException | NoDataFoundException e) {
-                        //no se pudo agregar, no deberia pasar
+                        //no se pudo agregar
                     }
                 }
             } else {
@@ -315,12 +368,12 @@ public class Backend {
                 while (indexNode < page.getNodes().size() || indexPuntero < page.getPunteros().size()) {
                     if (index % 2 == 0) { //agrega sus punteros
                         BTreePage subPage = (BTreePage) page.getPunteros().get(indexPuntero);
-                        setViableNode(subPage, comboBox, nodeNum, nodesKeyList);
+                        setViableNode(subPage, comboBox, currentMove, nodesKeyList, nodeFromCode);
                         indexPuntero++;
                     } else {
                         Recorrido node = page.getNodes().get(indexNode);
                         try {
-                            addNode(node, nodeNum, comboBox, nodesKeyList);
+                            addNode(node, currentMove, comboBox, nodesKeyList, nodeFromCode);
                         } catch (IndexOutOfBoundsException | NoDataFoundException e) {
                             //no se pudo agregar, no deberia pasar
                         }
@@ -332,20 +385,30 @@ public class Backend {
         }
     }
 
-    private void addNode(Recorrido node, int nodeNum, JComboBox comboBox, List<Integer> nodesKeyList) throws NoDataFoundException {
+    private void addNode(Recorrido recorrido, int currentMove, JComboBox comboBox, List<Integer> nodesKeyList,
+            int nodeFromCode)
+            throws NoDataFoundException {
         Collections.sort(nodesKeyList);
-        int codeNode = node.getGraph()
-                            .getNodeNum(node.getRecorrido().get(nodeNum))
-                            .getNumber();
-        if (Collections.binarySearch(nodesKeyList, codeNode) < 0) { //no existe
+        int codeNodeTo = recorrido.getGraph()
+                .getNodeNum(recorrido.getRecorrido().get(currentMove + 1))
+                .getNumber();
+        int beforeCodeNode = -1;
+        try {
+            beforeCodeNode
+                    = recorrido.getGraph().getNodeNum(recorrido.getRecorrido().get(currentMove)).getNumber();
+        } catch (Exception e) {
+        }
+        if (Collections.binarySearch(nodesKeyList, codeNodeTo) < 0 //no existe en la lista de agregados
+                && (nodeFromCode < 0 || beforeCodeNode == nodeFromCode)) {
             comboBox.addItem(
                     new KeyMove(
-                            nodeNum, 
-                            node.getGraph().getNode(node.getRecorrido().get(nodeNum)).getKeyLocation()
+                            codeNodeTo,
+                            recorrido.getGraph().getNode(recorrido.getRecorrido().get(currentMove + 1)).getKeyLocation()
                     )
             );
-            nodesKeyList.add(codeNode);
+            nodesKeyList.add(codeNodeTo);
         }
+
     }
 
 }

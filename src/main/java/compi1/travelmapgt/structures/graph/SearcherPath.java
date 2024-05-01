@@ -95,9 +95,9 @@ public class SearcherPath {
         return false;
     }
 
-    public Recorrido findPath(Grafo<LocationInfo, PathInfo> grafo, BTree<Recorrido> recorridos,
+    public Recorrido findPath( BTree<Recorrido> recorridos,
             FilterSpecifications filters, Clock clock) throws NoPathException {
-        if (recorridos.isEmpty() || grafo.isEmpty()) {
+        if (recorridos.isEmpty()) {
             throw new NoPathException();
         }
         Recorrido recorrido = null;

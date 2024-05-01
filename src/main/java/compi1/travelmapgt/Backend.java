@@ -126,7 +126,7 @@ public class Backend {
         restartComboBox(toSelector);
         File file = new File(filesUtil.getPath());
         try {
-            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".png");
+            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum-1) + ".png");
             dataCollector.readNodesData(file);
             setAction(grafo.getNodes().getRaiz(), fromSelector);
             setAction(grafo.getNodes().getRaiz(), toSelector);
@@ -342,6 +342,12 @@ public class Backend {
     public void showFronted() {
         fronted.setVisible(true);
         clock.setDisplayTime(fronted.getHourDisplay());
+    }
+    
+    public void closeProgram(){
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum-1) + ".png");
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "arbol_recorridos.png");
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
     }
 
     //----------------------------INICIALIZAR RECORRIDOS----------------------------

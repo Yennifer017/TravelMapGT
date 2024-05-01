@@ -82,6 +82,21 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="exportationMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Exportacion"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="BTreeNodesExp">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Arbol B de nodos"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BTreeNodesExpActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="javax.swing.JMenu" name="Information">
           <Properties>
             <Property name="text" type="java.lang.String" value="Informacion"/>
@@ -308,7 +323,7 @@
                 <StringItem index="0" value="Gasolina / Desgaste Fisico"/>
                 <StringItem index="1" value="Distancia"/>
                 <StringItem index="2" value="Dist y Gasolina/Dist yDesgaste"/>
-                <StringItem index="3" value="Dist, tiempo y trafico (vehiculo)"/>
+                <StringItem index="3" value="Dist y tiempo (y trafico, vehi.)"/>
               </StringArray>
             </Property>
           </Properties>

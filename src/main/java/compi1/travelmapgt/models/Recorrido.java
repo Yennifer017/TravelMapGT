@@ -7,8 +7,6 @@ import compi1.travelmapgt.structures.graph.Grafo;
 import compi1.travelmapgt.util.Clock;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -92,7 +90,8 @@ public class Recorrido implements Comparable<Recorrido> {
                         this.weight += pathInfo.getDistance() / pathInfo.getCostGas();
                     case MainMenu.ALL_FILTER -> {
                         int traficProbability = clock.calculateTraficProbability(currentTime, pathInfo);
-                        this.weight += pathInfo.getDistance() / (pathInfo.getAverageTimeCar() * (1 + traficProbability));
+                        this.weight += pathInfo.getDistance() / 
+                                (pathInfo.getAverageTimeCar() * (1 + (traficProbability/100)));
                         if (clock.isActive()) {
                             currentTime = currentTime.plusMinutes(pathInfo.getAverageTimeCar());
                         }
@@ -104,22 +103,34 @@ public class Recorrido implements Comparable<Recorrido> {
         }
     }
 
-    public void showInGraph() {
-        modifyRecorrido(true);
+    public void showInGraph(boolean extendedPath) {
+        modifyRecorrido(true, extendedPath);
     }
 
-    public void hiddeInGraph() {
-        modifyRecorrido(false);
+    public void hiddeInGraph(boolean extendedPath) {
+        modifyRecorrido(false, extendedPath);
     }
 
-    private void modifyRecorrido(boolean active) {
-        if (!recorrido.isEmpty()) {
-            for (Integer actual : recorrido) {
-                try {
-                    this.graph.getNode(actual).setActive(active);
-                } catch (NoDataFoundException ex) {
-                    Logger.getLogger(Recorrido.class.getName()).log(Level.SEVERE, null, ex);
+    private void modifyRecorrido(boolean active, boolean extendedPath) {
+        for (int i = 0; i < recorrido.size(); i++) {
+            try {
+                int current = recorrido.get(i);
+                this.graph.getNode(current).setActive(active);
+                if (i != recorrido.size() - 1) {
+                    int next = recorrido.get(i + 1);
+                    try {
+                        this.graph.getPath(current, next).setActive(active);
+                    } catch (NullPointerException e) {
+                    }
+                    if (extendedPath) {
+                        try {
+                            this.graph.getPath(next, current).setActive(active);
+                        } catch (NullPointerException e) {
+                        }
+                    }
                 }
+            } catch (NoDataFoundException e) {
+                /*controlado*/
             }
         }
     }

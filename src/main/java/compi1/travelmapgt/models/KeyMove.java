@@ -16,6 +16,6 @@ public class KeyMove {
     
     @Override
     public String toString(){
-        return this.keyString + "-" + keyNumber;
+        return this.keyString;
     }
 }

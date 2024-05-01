@@ -20,4 +20,5 @@ public class PathInfo {
     private LocalTime hourInitTrafic;
     private LocalTime hourFinishTrafic;
     private int probabilityTrafic;
+    private boolean isActive;
 }

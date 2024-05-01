@@ -42,7 +42,7 @@ public class Backend {
     private GraphGrapher grafoGrapher;
     private BTreeGrapher bTreeGrapher;
     private SearcherPath searchearPath;
-    private JFrame fronted;
+    private MainMenu fronted;
 
     private Clock clock;
     private Thread threadClock;
@@ -50,7 +50,7 @@ public class Backend {
     private int globalGraphNum;
     private int recorridoNum;
 
-    public Backend(JFrame fronted) {
+    public Backend(MainMenu fronted) {
         grafo = new Grafo<>();
         dataCollector = new DataCollector();
         filesUtil = new FilesUtil();
@@ -126,6 +126,7 @@ public class Backend {
         restartComboBox(toSelector);
         File file = new File(filesUtil.getPath());
         try {
+            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + globalGraphNum + ".png");
             dataCollector.readNodesData(file);
             setAction(grafo.getNodes().getRaiz(), fromSelector);
             setAction(grafo.getNodes().getRaiz(), toSelector);
@@ -188,6 +189,21 @@ public class Backend {
             showInesperatedError();
         }
     }
+    
+    public void exportBTreeNodes(){
+        try {
+            if(!grafo.isEmpty()){
+                bTreeGrapher.graph("../", "arbol_b_nodos", grafo.getNodes());
+                JOptionPane.showMessageDialog(null, "Se ha generado el archivo en ../arbol_b_nodos.png");
+            } else {
+                throw new NoDataFoundException();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, 
+                    "No existen datos para generar el arbol correctamente", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     //----------------------------BUSQUEDA DE NODOS----------------------------
     public void findPaths(JComboBox[] specifications) {
@@ -196,22 +212,11 @@ public class Backend {
             JOptionPane.showMessageDialog(null, "El nodo seleccionado es el mismo");
         } else {
             try {
-                boolean extendedPath = specifications[MainMenu.TYPE_TRANS].getSelectedIndex() != MainMenu.VEHICLE_TYPE;
-                /*BTree<Recorrido> recorridos = searchearPath.findAllPaths(
-                        grafo,
-                        new LocationInfo((String) specifications[MainMenu.FROM_NODE].getSelectedItem()),
-                        new LocationInfo((String) specifications[MainMenu.TO_NODE].getSelectedItem()),
-                        extendedPath
-                );
-                bTreeGrapher.graph(FilesUtil.RESOURCES_PATH, "arbol_recorridos", recorridos);
-                JOptionPane.showMessageDialog(null, "Se ha generado el archivo " + FilesUtil.RESOURCES_PATH
-                        + "arbol_recorridos.png como referencia del arbol B de todos los recorridos posibles");*/
                 BTree<Recorrido> recorridos = generateRecorridos(specifications, (String) specifications[MainMenu.FROM_NODE].getSelectedItem());
                 //inicializar el recorrido
                 fronted.setVisible(false);
-                GuidedTravel travel;
                 try {
-                    travel = new GuidedTravel(this, specifications, recorridos);
+                    GuidedTravel travel = new GuidedTravel(this, specifications, recorridos);
                     travel.initClock(clock);
                     travel.setVisible(true);
                 } catch (NoPathException ex) {
@@ -258,7 +263,7 @@ public class Backend {
                 specifications[MainMenu.BEST_SPECIFICATION].getSelectedIndex() == MainMenu.BEST_ROUTE
         );
         Recorrido recorrido = searchearPath.findPath(recorridos, filters, clock);
-        recorrido.showInGraph();
+        recorrido.showInGraph(filters.isExtendedPath());
         updateRecorrido(displayGraph, specifications);
         return recorrido;
     }
@@ -323,18 +328,20 @@ public class Backend {
         label.setIcon(null);
         label.revalidate();
         label.repaint();
+        this.grafo = new Grafo<>();
     }
 
     public void endPath(Recorrido currentRecorrido, JFrame frame) {
         if (currentRecorrido != null) {
-            currentRecorrido.hiddeInGraph();
+            currentRecorrido.hiddeInGraph(true);
         }
         frame.dispose();
-        fronted.setVisible(true);
+        this.showFronted();
     }
 
     public void showFronted() {
         fronted.setVisible(true);
+        clock.setDisplayTime(fronted.getHourDisplay());
     }
 
     //----------------------------INICIALIZAR RECORRIDOS----------------------------

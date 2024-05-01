@@ -1,6 +1,7 @@
 package compi1.travelmapgt;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -53,6 +54,10 @@ public class MainMenu extends javax.swing.JFrame {
         specifications[BEST_SPECIFICATION] = typeRuteCB;
         specifications[DISPLAY_SPECIFICATION] = displayCB;
     }
+    
+    protected JLabel getHourDisplay(){
+        return hourDisplay;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -94,6 +99,8 @@ public class MainMenu extends javax.swing.JFrame {
         resetHourOp = new javax.swing.JMenuItem();
         pauseClockOp = new javax.swing.JMenuItem();
         continueClock = new javax.swing.JMenuItem();
+        exportationMenu = new javax.swing.JMenu();
+        BTreeNodesExp = new javax.swing.JMenuItem();
         Information = new javax.swing.JMenu();
         helpOp = new javax.swing.JMenuItem();
         creditsOp = new javax.swing.JMenuItem();
@@ -113,7 +120,7 @@ public class MainMenu extends javax.swing.JFrame {
 
         transpCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vehiculo", "Caminando" }));
 
-        filterCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Dist y Gasolina/Dist yDesgaste", "Dist, tiempo y trafico (vehiculo)" }));
+        filterCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gasolina / Desgaste Fisico", "Distancia", "Dist y Gasolina/Dist yDesgaste", "Dist y tiempo (y trafico, vehi.)" }));
 
         jLabel3.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(228, 228, 228));
@@ -319,6 +326,18 @@ public class MainMenu extends javax.swing.JFrame {
 
         menu.add(HourMenu);
 
+        exportationMenu.setText("Exportacion");
+
+        BTreeNodesExp.setText("Arbol B de nodos");
+        BTreeNodesExp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTreeNodesExpActionPerformed(evt);
+            }
+        });
+        exportationMenu.add(BTreeNodesExp);
+
+        menu.add(exportationMenu);
+
         Information.setText("Informacion");
 
         helpOp.setText("Ayuda");
@@ -401,8 +420,7 @@ public class MainMenu extends javax.swing.JFrame {
     private void bStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStartActionPerformed
         try {
             backend.findPaths(specifications);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        } catch (NullPointerException e) { 
             JOptionPane.showMessageDialog(null, "No hay datos para buscar el recorrido");
         }
     }//GEN-LAST:event_bStartActionPerformed
@@ -415,8 +433,13 @@ public class MainMenu extends javax.swing.JFrame {
         backend.restartIde(fromNodeCB, toNodeCB, grafoDisplay);
     }//GEN-LAST:event_restartIdeActionPerformed
 
+    private void BTreeNodesExpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTreeNodesExpActionPerformed
+        backend.exportBTreeNodes();
+    }//GEN-LAST:event_BTreeNodesExpActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem BTreeNodesExp;
     private javax.swing.JMenu HourMenu;
     private javax.swing.JMenu Information;
     private javax.swing.JMenuItem LocationDataOp;
@@ -428,6 +451,7 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> displayCB;
     private javax.swing.JPanel displayGraph;
     private javax.swing.JMenuItem exampleDataOp;
+    private javax.swing.JMenu exportationMenu;
     private javax.swing.JComboBox<String> filterCB;
     private javax.swing.JComboBox<String> fromNodeCB;
     private javax.swing.JLabel grafoDisplay;

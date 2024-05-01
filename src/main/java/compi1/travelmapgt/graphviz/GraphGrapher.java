@@ -63,8 +63,8 @@ public class GraphGrapher {
         }
 
         for (NodeGraph<LocationInfo> node : page.getNodes()) { //graficar sus nodos
-            code += IDENTATION + node.getNumber() + "[shape=circle label=\"" + node.getNumber()
-                    + "-" + node.getKey().getKeyLocation() + "\"";
+            code += IDENTATION + node.getNumber() + "[shape=circle label=\"" 
+                    + node.getKey().getKeyLocation() + "\"";
             if (node.getKey().isActive()) {
                 code += " fillcolor=" + COLOR_SELECTED;
             }
@@ -82,21 +82,20 @@ public class GraphGrapher {
             String code = "";
 
             for (int i = 0; i < limit; i++) {
-                if (typeWeight < 0) { //sin pesos
-                    code += IDENTATION + i + "-> {";
-                    for (int j = 0; j < limit; j++) {
-                        if (grafo.getPaths().get(i).get(j) != null) {
-                            code += j + " ";
+                for (int j = 0; j < limit; j++) {
+                    if (grafo.getPaths().get(i).get(j) != null) {
+                        code += IDENTATION + i + "->" + j;
+                        if (grafo.getPaths().get(i).get(j).isActive() || typeWeight >= 0) {
+                            code += " [";
+                            if(typeWeight >= 0){ // con pesos
+                                code += getWeightLabel(typeWeight, grafo.getPaths().get(i).get(j));
+                            }
+                            if(grafo.getPaths().get(i).get(j).isActive()){ //esta activo
+                                code += " color=\"#ff0000\"";
+                            }
+                            code += "]";
                         }
-                    }
-                    code += "}" + ENTER;
-                } else { //con pesos
-                    for (int j = 0; j < limit; j++) {
-                        if (grafo.getPaths().get(i).get(j) != null) {
-                            code += IDENTATION + i + "->" + j;
-                            code += getWeightLabel(typeWeight, grafo.getPaths().get(i).get(j));
-                            code += ENTER;
-                        }
+                        code += ENTER;
                     }
                 }
             }
@@ -106,7 +105,7 @@ public class GraphGrapher {
     }
 
     private String getWeightLabel(int type, PathInfo pathInfo) {
-        String code = " [label=\"";
+        String code = "label=\"";
         switch (type) {
             case GAS_WEIGHT ->
                 code += pathInfo.getCostGas();
@@ -127,7 +126,7 @@ public class GraphGrapher {
                 return "";
             }
         }
-        return code + "\"]";
+        return code + "\"";
     }
 
 }

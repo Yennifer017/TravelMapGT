@@ -1,0 +1,23 @@
+Grafo<LocationInfo, PathInfo> grafo = new Grafo();
+        GraphGrapher grapher = new GraphGrapher()
+                ;
+        try {
+            grafo.addNode(new LocationInfo("Nodo1"));
+            grafo.addNode(new LocationInfo("Nodo2"));
+            grafo.addNode(new LocationInfo("Nodo3"));
+            System.out.println("Nodos insertados correctamente");
+            grafo.addPath(new LocationInfo("Nodo1"), new LocationInfo("Nodo2"), new PathInfo());
+            grafo.addPath(new LocationInfo("Nodo2"), new LocationInfo("Nodo1"), new PathInfo());
+            grafo.addPath(new LocationInfo("Nodo3"), new LocationInfo("Nodo2"), new PathInfo());
+            grafo.addPath(new LocationInfo("Nodo1"), new LocationInfo("Nodo3"), new PathInfo());
+            System.out.println("Caminos insertados correctamente");
+            
+            grafo.getNode(new LocationInfo("Nodo1")).setActive(true);
+            grafo.getNode(new LocationInfo("Nodo2")).setActive(true);
+            
+            grapher.graph("../", "GrafosTest", grafo);
+            System.out.println("Grafica generada correctamente");
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }

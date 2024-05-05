@@ -122,12 +122,12 @@ public class Backend {
     public void readLocationInfo(JLabel label, JComboBox fromSelector, JComboBox toSelector) {
         grafo = new Grafo<>(); //reiniciar el grafo
         dataCollector.setGrafo(grafo);
-        restartComboBox(fromSelector);
-        restartComboBox(toSelector);
         File file = new File(filesUtil.getPath());
         try {
-            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum-1) + ".png");
+            filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum - 1) + ".png");
             dataCollector.readNodesData(file);
+            restartComboBox(fromSelector);
+            restartComboBox(toSelector);
             setAction(grafo.getNodes().getRaiz(), fromSelector);
             setAction(grafo.getNodes().getRaiz(), toSelector);
             grafoGrapher.graph(FilesUtil.RESOURCES_PATH, "globalGraph" + globalGraphNum, grafo);
@@ -189,18 +189,33 @@ public class Backend {
             showInesperatedError();
         }
     }
-    
-    public void exportBTreeNodes(){
+
+    public void exportBTreeNodes() {
         try {
-            if(!grafo.isEmpty()){
+            if (!grafo.isEmpty()) {
                 bTreeGrapher.graph("../", "arbol_b_nodos", grafo.getNodes());
                 JOptionPane.showMessageDialog(null, "Se ha generado el archivo en ../arbol_b_nodos.png");
             } else {
                 throw new NoDataFoundException();
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, 
-                    "No existen datos para generar el arbol correctamente", "Error", 
+            JOptionPane.showMessageDialog(null,
+                    "No existen datos para generar el arbol correctamente", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void exportGraph(){
+        try {
+            if (!grafo.isEmpty()) {
+                grafoGrapher.graphWithResolution("../", "grafo_con_resolucion", grafo);
+                JOptionPane.showMessageDialog(null, "Se ha generado el archivo en ../arbol_b_nodos.png");
+            } else {
+                throw new NoDataFoundException();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "No existen datos para generar el grafo correctamente", "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -221,6 +236,7 @@ public class Backend {
                     travel.setVisible(true);
                 } catch (NoPathException ex) {
                     JOptionPane.showMessageDialog(null, "No se encontro un camino que une los dos nodos");
+                    this.showFronted();
                 }
             } catch (NoDataFoundException | IOException ex) {
                 showInesperatedError();
@@ -343,9 +359,9 @@ public class Backend {
         fronted.setVisible(true);
         clock.setDisplayTime(fronted.getHourDisplay());
     }
-    
-    public void closeProgram(){
-        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum-1) + ".png");
+
+    public void closeProgram() {
+        filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "globalGraph" + (globalGraphNum - 1) + ".png");
         filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "arbol_recorridos.png");
         filesUtil.deleteFile(FilesUtil.RESOURCES_PATH + "recorrido" + recorridoNum + ".png");
     }

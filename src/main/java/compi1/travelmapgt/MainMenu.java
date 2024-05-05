@@ -101,6 +101,7 @@ public class MainMenu extends javax.swing.JFrame {
         continueClock = new javax.swing.JMenuItem();
         exportationMenu = new javax.swing.JMenu();
         BTreeNodesExp = new javax.swing.JMenuItem();
+        GrafoExpOp = new javax.swing.JMenuItem();
         Information = new javax.swing.JMenu();
         helpOp = new javax.swing.JMenuItem();
         creditsOp = new javax.swing.JMenuItem();
@@ -341,6 +342,14 @@ public class MainMenu extends javax.swing.JFrame {
         });
         exportationMenu.add(BTreeNodesExp);
 
+        GrafoExpOp.setText("Grafo");
+        GrafoExpOp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GrafoExpOpActionPerformed(evt);
+            }
+        });
+        exportationMenu.add(GrafoExpOp);
+
         menu.add(exportationMenu);
 
         Information.setText("Informacion");
@@ -446,9 +455,14 @@ public class MainMenu extends javax.swing.JFrame {
         backend.closeProgram();
     }//GEN-LAST:event_formWindowClosing
 
+    private void GrafoExpOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GrafoExpOpActionPerformed
+        backend.exportGraph();
+    }//GEN-LAST:event_GrafoExpOpActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem BTreeNodesExp;
+    private javax.swing.JMenuItem GrafoExpOp;
     private javax.swing.JMenu HourMenu;
     private javax.swing.JMenu Information;
     private javax.swing.JMenuItem LocationDataOp;

@@ -35,6 +35,11 @@ public class GraphGrapher {
             int typeWeight) throws IOException {
         generator.generateSmallImg(finalPath, nameFile, getCode(grafo, typeWeight));
     }
+    
+    public void graphWithResolution(String finalPath, String nameFile, Grafo<LocationInfo, PathInfo> grafo) 
+            throws IOException{
+        generator.generateImg(finalPath, nameFile, getCode(grafo, NOTHING));
+    }
 
     private String getCode(Grafo<LocationInfo, PathInfo> grafo, int typeWeight) {
         String code = "digraph {" + ENTER;

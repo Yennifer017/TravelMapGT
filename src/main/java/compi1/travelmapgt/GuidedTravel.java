@@ -42,6 +42,7 @@ public class GuidedTravel extends javax.swing.JFrame {
         this.specifications = specifications;
         currentRecorrido = backend.initDefinePath(recorridos, grafoDisplay, specifications);
         displayRoute.setText(currentRecorrido.toString());
+        displayWeight.setText(String.valueOf(currentRecorrido.getWeight()));
         currentNode = 0;
         backend.initOptionsRecorrido(moveToCB, recorridos, currentNode, -1);
     }
@@ -91,6 +92,7 @@ public class GuidedTravel extends javax.swing.JFrame {
                 currentNodeDisp.setText(((KeyMove) moveToCB.getSelectedItem()).getKeyString());
                 currentRecorrido = backend.initDefinePath(recorridos, grafoDisplay, specifications);
                 displayRoute.setText(currentRecorrido.toString());
+                displayWeight.setText(String.valueOf(currentRecorrido.getWeight()));
                 backend.initOptionsRecorrido(moveToCB, recorridos, currentNode, -1);
             } catch (NoDataFoundException ex) {
                 //no deberia pasar
@@ -161,6 +163,8 @@ public class GuidedTravel extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         scroll = new javax.swing.JScrollPane();
         displayRoute = new javax.swing.JTextPane();
+        jLabel14 = new javax.swing.JLabel();
+        displayWeight = new javax.swing.JLabel();
         displayGraph = new javax.swing.JPanel();
         grafoDisplay = new javax.swing.JLabel();
 
@@ -262,6 +266,14 @@ public class GuidedTravel extends javax.swing.JFrame {
         displayRoute.setText("Display the best route");
         scroll.setViewportView(displayRoute);
 
+        jLabel14.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(228, 228, 228));
+        jLabel14.setText("Peso Ruta:");
+
+        displayWeight.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
+        displayWeight.setForeground(new java.awt.Color(228, 228, 228));
+        displayWeight.setText("-------------");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -275,14 +287,16 @@ public class GuidedTravel extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(moveToCB, 0, 240, Short.MAX_VALUE)
                                     .addComponent(currentNodeDisp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(displayWeight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(22, 22, 22))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -346,6 +360,10 @@ public class GuidedTravel extends javax.swing.JFrame {
                     .addComponent(jLabel12)
                     .addComponent(currentNodeDisp))
                 .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(displayWeight))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13)
                     .addComponent(scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -357,7 +375,7 @@ public class GuidedTravel extends javax.swing.JFrame {
                 .addComponent(continueRoute)
                 .addGap(18, 18, 18)
                 .addComponent(stop)
-                .addContainerGap(188, Short.MAX_VALUE))
+                .addContainerGap(148, Short.MAX_VALUE))
         );
 
         displayGraph.setBackground(new java.awt.Color(2, 41, 58));
@@ -417,12 +435,14 @@ public class GuidedTravel extends javax.swing.JFrame {
     private javax.swing.JLabel destinityDisp;
     private javax.swing.JPanel displayGraph;
     private javax.swing.JTextPane displayRoute;
+    private javax.swing.JLabel displayWeight;
     private javax.swing.JLabel filterDisp;
     private javax.swing.JLabel grafoDisplay;
     private javax.swing.JLabel hourDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

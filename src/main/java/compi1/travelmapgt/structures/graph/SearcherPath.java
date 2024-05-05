@@ -102,6 +102,9 @@ public class SearcherPath {
         }
         Recorrido recorrido = null;
         recorrido = evaluateWeight(recorridos.getRaiz(), recorrido, filters, clock);
+        if(recorrido == null){
+            throw new NoPathException();
+        }
         return recorrido;
     }
 
